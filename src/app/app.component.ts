@@ -6,6 +6,7 @@ import { HeaderComponent } from './layout/header/header.component';
 import { FooterComponent } from './layout/footer/footer.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { NotificationComponent } from './shared/components/notification/notification.component';
+import { LoadingComponent } from './shared/components/loading/loading.component';
 
 @Component({
   selector: 'app-root',
@@ -17,12 +18,14 @@ import { NotificationComponent } from './shared/components/notification/notifica
     HeaderComponent,
     FooterComponent,
     SidebarComponent,
-    NotificationComponent
+    NotificationComponent,
+    LoadingComponent
   ],
   template: `
     <div class="h-screen flex flex-col">
-      <!-- Global Notifications -->
+      <!-- Global Components -->
       <app-notification></app-notification>
+      <app-loading></app-loading>
 
       <!-- Public Layout for unauthenticated users -->
       <div *ngIf="!isLoggedIn" class="h-full flex flex-col">
