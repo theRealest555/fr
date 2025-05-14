@@ -54,22 +54,8 @@ module.exports = {
         'te-md': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         'te-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
       },
-      borderRadius: {
-        'te-sm': '0.25rem',
-        'te-md': '0.375rem',
-        'te-lg': '0.5rem',
-      },
-      spacing: {
-        'te-0': '0',
-        'te-1': '0.25rem',
-        'te-2': '0.5rem',
-        'te-3': '0.75rem',
-        'te-4': '1rem',
-        'te-6': '1.5rem',
-        'te-8': '2rem',
-        'te-12': '3rem',
-        'te-16': '4rem',
-        'te-24': '6rem',
+      width: {
+        '1/7': '14.285714%',
       }
     }
   },

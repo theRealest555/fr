@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { SubmissionService } from '../../../../core/services/submission.service';
+import { FileService } from '../../../../core/services/file.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { Submission, FileType } from '../../../../core/models/data.models';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 
@@ -89,7 +91,12 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
                 <div class="text-sm text-gray-500 mb-2">Filename: {{ getCinDocument()?.fileName }}</div>
                 <div class="text-sm text-gray-500 mb-4">Uploaded: {{ formatDate(getCinDocument()?.uploadedAt) }}</div>
                 <div>
-                  <app-button variant="outline" size="sm">
+                  <app-button
+                    variant="outline"
+                    size="sm"
+                    [loading]="downloadingCin"
+                    (onClick)="downloadFile(getCinDocument()?.id || 0, 'cin')"
+                  >
                     <svg class="-ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
@@ -108,7 +115,12 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
                 <div class="text-sm text-gray-500 mb-2">Filename: {{ getPersonalPhoto()?.fileName }}</div>
                 <div class="text-sm text-gray-500 mb-4">Uploaded: {{ formatDate(getPersonalPhoto()?.uploadedAt) }}</div>
                 <div>
-                  <app-button variant="outline" size="sm">
+                  <app-button
+                    variant="outline"
+                    size="sm"
+                    [loading]="downloadingPhoto"
+                    (onClick)="downloadFile(getPersonalPhoto()?.id || 0, 'photo')"
+                  >
                     <svg class="-ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
@@ -127,7 +139,12 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
                 <div class="text-sm text-gray-500 mb-2">Filename: {{ getGreyCardDocument()?.fileName }}</div>
                 <div class="text-sm text-gray-500 mb-4">Uploaded: {{ formatDate(getGreyCardDocument()?.uploadedAt) }}</div>
                 <div>
-                  <app-button variant="outline" size="sm">
+                  <app-button
+                    variant="outline"
+                    size="sm"
+                    [loading]="downloadingGreyCard"
+                    (onClick)="downloadFile(getGreyCardDocument()?.id || 0, 'greycard')"
+                  >
                     <svg class="-ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
@@ -162,10 +179,17 @@ export class SubmissionDetailComponent implements OnInit {
   submission: Submission | null = null;
   error = false;
 
+  // Download loading states
+  downloadingCin = false;
+  downloadingPhoto = false;
+  downloadingGreyCard = false;
+
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly submissionService: SubmissionService
+    private readonly submissionService: SubmissionService,
+    private readonly fileService: FileService,
+    private readonly notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -206,6 +230,62 @@ export class SubmissionDetailComponent implements OnInit {
 
   getGreyCardDocument() {
     return this.submission?.files.find(f => f.fileType === FileType.CG);
+  }
+
+  downloadFile(fileId: number, fileType: 'cin' | 'photo' | 'greycard'): void {
+    if (!fileId) return;
+
+    // Set the appropriate loading flag
+    switch (fileType) {
+      case 'cin': this.downloadingCin = true; break;
+      case 'photo': this.downloadingPhoto = true; break;
+      case 'greycard': this.downloadingGreyCard = true; break;
+    }
+
+    this.fileService.downloadFile(fileId).subscribe({
+      next: (blob) => {
+        // Determine filename based on file type and submission info
+        let fileName = '';
+        const nameBase = this.submission?.fullName.replace(/\s+/g, '_') || 'document';
+
+        switch (fileType) {
+          case 'cin':
+            fileName = `CIN_${nameBase}_${this.submission?.cin || ''}.${this.getFileExtension(blob)}`;
+            break;
+          case 'photo':
+            fileName = `Photo_${nameBase}.${this.getFileExtension(blob)}`;
+            break;
+          case 'greycard':
+            fileName = `GreyCard_${nameBase}_${this.submission?.greyCard || ''}.${this.getFileExtension(blob)}`;
+            break;
+        }
+
+        // Trigger the download
+        this.fileService.saveFile(blob, fileName);
+        this.notificationService.success('File downloaded successfully');
+      },
+      error: (error) => {
+        this.notificationService.error('Failed to download file. Please try again later.');
+        console.error('Download error:', error);
+      },
+      complete: () => {
+        // Reset the loading flag
+        switch (fileType) {
+          case 'cin': this.downloadingCin = false; break;
+          case 'photo': this.downloadingPhoto = false; break;
+          case 'greycard': this.downloadingGreyCard = false; break;
+        }
+      }
+    });
+  }
+
+  getFileExtension(blob: Blob): string {
+    switch (blob.type) {
+      case 'image/jpeg': return 'jpg';
+      case 'image/png': return 'png';
+      case 'application/pdf': return 'pdf';
+      default: return 'dat';
+    }
   }
 
   goBack(): void {

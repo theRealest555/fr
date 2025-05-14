@@ -209,9 +209,9 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
                 <p class="mt-1 text-xs text-gray-500">JPG or PNG, max 5MB</p>
               </div>
 
-              <!-- Grey Card Image (Optional) -->
+              <!-- Grey Card Image (Only shown when Grey Card number is provided) -->
               <div *ngIf="greyCard?.value">
-                <label for="greyCardImage" class="form-label">Grey Card Document</label>
+                <label for="greyCardImage" class="form-label">Grey Card Document <span class="text-red-500">*</span></label>
                 <div class="mt-1 flex items-center">
                   <input
                     type="file"
@@ -257,7 +257,12 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
         </form>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    .form-error {
+      @apply text-sm text-red-600 mt-1;
+    }
+  `]
 })
 export class SubmissionFormComponent implements OnInit {
   submissionForm: FormGroup;
@@ -293,6 +298,14 @@ export class SubmissionFormComponent implements OnInit {
       plantId: [null, Validators.required],
       greyCard: ['', Validators.pattern(/^\d+-[A-Za-z]-\d+$/)]
     });
+
+    // Subscribe to grey card changes to reset the file when grey card is removed
+    this.submissionForm.get('greyCard')?.valueChanges.subscribe(value => {
+      if (!value && this.greyCardImage) {
+        this.greyCardImage = null;
+        this.greyCardImageError = '';
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -301,8 +314,13 @@ export class SubmissionFormComponent implements OnInit {
   }
 
   loadPlants(): void {
-    this.plantService.getAllPlants().subscribe(plants => {
-      this.plants = plants;
+    this.plantService.getAllPlants().subscribe({
+      next: plants => {
+        this.plants = plants;
+      },
+      error: () => {
+        this.notificationService.error('Failed to load plants. Please try again later.');
+      }
     });
   }
 
@@ -373,6 +391,12 @@ export class SubmissionFormComponent implements OnInit {
   }
 
   onSubmit(): void {
+    // Mark all fields as touched to trigger validation
+    Object.keys(this.submissionForm.controls).forEach(key => {
+      const control = this.submissionForm.get(key);
+      control?.markAsTouched();
+    });
+
     if (this.submissionForm.invalid) {
       return;
     }
@@ -418,9 +442,13 @@ export class SubmissionFormComponent implements OnInit {
         // Navigate to confirmation page
         this.router.navigate(['/submission-confirm', response.id]);
       },
-      error: () => {
+      error: (error) => {
         this.loading = false;
-        // Error will be handled by the interceptor
+        if (error?.error?.message) {
+          this.notificationService.error(error.error.message);
+        } else {
+          this.notificationService.error('Failed to create submission. Please try again later.');
+        }
       }
     });
   }

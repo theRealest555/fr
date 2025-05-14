@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class FileService {
-  private apiUrl = 'http://localhost:5268/api/files';
+  private readonly apiUrl = `${environment.apiUrl}/files`;
 
   constructor(private http: HttpClient) { }
 
@@ -47,5 +47,24 @@ export class FileService {
     a.click();
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
+  }
+
+  /**
+   * Determines the file type from a MIME type
+   * @param mimeType The MIME type
+   * @returns A string representing the file type
+   */
+  getFileTypeFromMimeType(mimeType: string): string {
+    if (mimeType.startsWith('image/')) {
+      return 'Image';
+    } else if (mimeType.startsWith('application/pdf')) {
+      return 'PDF';
+    } else if (mimeType.includes('word')) {
+      return 'Word Document';
+    } else if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) {
+      return 'Excel Document';
+    } else {
+      return 'Document';
+    }
   }
 }

@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:5268/api',
+  apiUrl: '/api',  // This will be redirected via proxy configuration
   appTitle: 'TE Connectivity Admin'
 };

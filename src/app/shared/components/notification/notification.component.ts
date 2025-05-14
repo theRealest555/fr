@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Notification, NotificationService, NotificationType } from '../../../core/services/notification.service';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-notification',
@@ -10,7 +11,7 @@ import { Notification, NotificationService, NotificationType } from '../../../co
     <div *ngIf="notifications.length > 0" aria-live="assertive" class="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start z-50">
       <div class="w-full flex flex-col items-center space-y-4 sm:items-end">
         <div *ngFor="let notification of notifications"
-             class="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 overflow-hidden transform transition-all duration-300 ease-in-out"
+             class="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 overflow-hidden"
              [ngClass]="getRingColorClass(notification)"
              [@fadeInOut]="'in'">
           <div class="p-4">
@@ -57,21 +58,17 @@ import { Notification, NotificationService, NotificationType } from '../../../co
       </div>
     </div>
   `,
-  styles: [`
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-1rem); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeOut {
-      from { opacity: 1; transform: translateY(0); }
-      to { opacity: 0; transform: translateY(-1rem); }
-    }
-
-    .fadeInOut {
-      animation: fadeIn 0.3s ease-out forwards;
-    }
-  `]
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-1rem)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(-1rem)' }))
+      ])
+    ])
+  ]
 })
 export class NotificationComponent implements OnInit {
   notifications: Notification[] = [];
