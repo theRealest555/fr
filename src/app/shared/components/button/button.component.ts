@@ -21,8 +21,7 @@ import { CommonModule } from '@angular/common';
         <ng-content></ng-content>
       </div>
     </button>
-  `,
-  styles: []
+  `
 })
 export class ButtonComponent implements OnInit {
   @Input() variant: 'primary' | 'secondary' | 'outline' | 'danger' = 'primary';

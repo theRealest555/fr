@@ -81,8 +81,7 @@ import { AuthService } from './core/services/auth.service';
         <app-footer></app-footer>
       </div>
     </div>
-  `,
-  styles: []
+  `
 })
 export class AppComponent implements OnInit {
   isLoggedIn = false;

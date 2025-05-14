@@ -184,8 +184,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
         </div>
       </form>
     </div>
-  `,
-  styles: []
+  `
 })
 export class SubmissionFormComponent implements OnInit {
   submissionForm: FormGroup;

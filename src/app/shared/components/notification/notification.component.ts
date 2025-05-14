@@ -57,8 +57,7 @@ import { CommonModule } from '@angular/common';
         </div>
       </div>
     </div>
-  `,
-  styles: []
+  `
 })
 export class NotificationComponent implements OnInit {
   notifications: Notification[] = [];

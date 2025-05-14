@@ -28,7 +28,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
         <div>
           <a
             routerLink="/admin/users/add"
-            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
           >
             <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -214,8 +214,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
         </div>
       </div>
     </div>
-  `,
-  styles: []
+  `
 })
 export class AdminUsersComponent implements OnInit {
   admins: User[] = [];

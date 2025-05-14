@@ -98,8 +98,7 @@ import { AdminRoles, User } from '../../core/models/auth.models';
         </div>
       </div>
     </div>
-  `,
-  styles: []
+  `
 })
 export class SidebarComponent implements OnInit {
   currentUser: User | null = null;

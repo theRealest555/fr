@@ -155,8 +155,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
       <p class="text-gray-500 mb-4">The requested submission could not be found or you don't have permission to view it.</p>
       <app-button (onClick)="goBack()">Go Back</app-button>
     </div>
-  `,
-  styles: []
+  `
 })
 export class SubmissionDetailComponent implements OnInit {
   submissionId!: number;

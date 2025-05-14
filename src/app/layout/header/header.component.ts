@@ -83,8 +83,7 @@ import { User } from '../../core/models/auth.models';
         </div>
       </div>
     </header>
-  `,
-  styles: []
+  `
 })
 export class HeaderComponent implements OnInit {
   isUserMenuOpen = false;

@@ -41,8 +41,7 @@ import { Plant } from '../../../../core/models/data.models';
         <p class="text-gray-500">There are no plants to display at this time.</p>
       </div>
     </div>
-  `,
-  styles: []
+  `
 })
 export class PlantListComponent implements OnInit {
   plants: Plant[] = [];

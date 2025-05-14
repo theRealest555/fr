@@ -99,8 +99,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
         </form>
       </div>
     </div>
-  `,
-  styles: []
+  `
 })
 export class ChangePasswordComponent implements OnInit {
   passwordForm: FormGroup;

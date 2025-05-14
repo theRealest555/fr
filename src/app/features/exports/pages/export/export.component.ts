@@ -113,8 +113,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
         </form>
       </div>
     </div>
-  `,
-  styles: []
+  `
 })
 export class ExportComponent implements OnInit {
   exportForm: FormGroup;

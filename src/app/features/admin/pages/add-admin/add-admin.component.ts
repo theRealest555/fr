@@ -202,8 +202,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
         </div>
       </div>
     </div>
-  `,
-  styles: []
+  `
 })
 export class AddAdminComponent implements OnInit {
   adminForm: FormGroup;

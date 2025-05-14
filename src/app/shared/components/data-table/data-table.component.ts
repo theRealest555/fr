@@ -43,8 +43,7 @@ import { CommonModule } from '@angular/common';
         </tbody>
       </table>
     </div>
-  `,
-  styles: []
+  `
 })
 export class DataTableComponent implements OnChanges {
   @Input() columns: Array<{

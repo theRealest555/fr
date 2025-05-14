@@ -109,8 +109,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
         </ng-template>
       </div>
     </div>
-  `,
-  styles: []
+  `
 })
 export class SubmissionListComponent implements OnInit {
   submissions: Submission[] = [];
