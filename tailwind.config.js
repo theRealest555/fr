@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+      },
       colors: {
         primary: {
           50: '#fff8f1',
@@ -30,11 +33,47 @@ module.exports = {
           800: '#252f3f',
           900: '#161e2e',
         },
-        "te-orange": "#ff5a1f",
-        "te-white": "#ffffff",
-        "te-black": "#000000",
+        success: {
+          100: '#def7ec',
+          500: '#0e9f6e',
+          700: '#046c4e',
+        },
+        warning: {
+          100: '#fef3c7',
+          500: '#f59e0b',
+          700: '#b45309',
+        },
+        error: {
+          100: '#fee2e2',
+          500: '#ef4444',
+          700: '#b91c1c',
+        },
+      },
+      boxShadow: {
+        'te-sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+        'te-md': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        'te-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+      },
+      borderRadius: {
+        'te-sm': '0.25rem',
+        'te-md': '0.375rem',
+        'te-lg': '0.5rem',
+      },
+      spacing: {
+        'te-0': '0',
+        'te-1': '0.25rem',
+        'te-2': '0.5rem',
+        'te-3': '0.75rem',
+        'te-4': '1rem',
+        'te-6': '1.5rem',
+        'te-8': '2rem',
+        'te-12': '3rem',
+        'te-16': '4rem',
+        'te-24': '6rem',
       }
     }
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 }

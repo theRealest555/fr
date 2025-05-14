@@ -25,6 +25,9 @@ export class NotificationService {
 
   constructor() { }
 
+  /**
+   * Show a success notification
+   */
   success(message: string, autoClose = true, duration = 5000): void {
     this.addNotification({
       id: this.generateId(),
@@ -35,7 +38,10 @@ export class NotificationService {
     });
   }
 
-  error(message: string, autoClose = true, duration = 5000): void {
+  /**
+   * Show an error notification
+   */
+  error(message: string, autoClose = true, duration = 8000): void {
     this.addNotification({
       id: this.generateId(),
       message,
@@ -45,7 +51,10 @@ export class NotificationService {
     });
   }
 
-  warning(message: string, autoClose = true, duration = 5000): void {
+  /**
+   * Show a warning notification
+   */
+  warning(message: string, autoClose = true, duration = 6000): void {
     this.addNotification({
       id: this.generateId(),
       message,
@@ -55,6 +64,9 @@ export class NotificationService {
     });
   }
 
+  /**
+   * Show an info notification
+   */
   info(message: string, autoClose = true, duration = 5000): void {
     this.addNotification({
       id: this.generateId(),
@@ -65,16 +77,25 @@ export class NotificationService {
     });
   }
 
+  /**
+   * Dismiss a notification by ID
+   */
   dismiss(id: string): void {
     const currentNotifications = this.notificationsSubject.value;
     const updatedNotifications = currentNotifications.filter(notification => notification.id !== id);
     this.notificationsSubject.next(updatedNotifications);
   }
 
+  /**
+   * Clear all notifications
+   */
   clear(): void {
     this.notificationsSubject.next([]);
   }
 
+  /**
+   * Add a notification to the stack
+   */
   private addNotification(notification: Notification): void {
     const currentNotifications = this.notificationsSubject.value;
     const updatedNotifications = [...currentNotifications, notification];
@@ -87,7 +108,10 @@ export class NotificationService {
     }
   }
 
+  /**
+   * Generate a unique ID for the notification
+   */
   private generateId(): string {
-    return Math.random().toString(36).substring(2, 11);
+    return Math.random().toString(36).substring(2, 15);
   }
 }

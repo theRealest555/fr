@@ -6,13 +6,14 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <footer class="bg-white border-t border-gray-200">
-      <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+    <footer class="bg-white border-t border-gray-200 py-3">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
           <div class="text-sm text-gray-500">
             &copy; {{ currentYear }} TE Connectivity. All rights reserved.
           </div>
           <div class="text-sm text-gray-500">
+            <img src="assets/images/logo.svg" alt="TE Connectivity" class="h-6 w-auto inline-block mr-2">
             Version 1.0.0
           </div>
         </div>

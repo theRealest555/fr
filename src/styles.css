@@ -9,44 +9,91 @@ html, body {
 
 body {
   margin: 0;
-  font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom utility classes */
+/* Custom styles */
 @layer components {
-  .te-container {
-    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  /* Button styles */
+  .btn {
+    @apply inline-flex items-center px-4 py-2 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn text-white bg-primary-500 hover:bg-primary-600 border border-transparent;
+  }
+
+  .btn-secondary {
+    @apply btn text-primary-700 bg-primary-100 hover:bg-primary-200 border border-transparent;
+  }
+
+  .btn-outline {
+    @apply btn text-primary-700 bg-transparent hover:bg-primary-50 border border-primary-500;
+  }
+
+  .btn-danger {
+    @apply btn text-white bg-error-500 hover:bg-error-700 border border-transparent;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
   }
 
   /* Form styles */
-  .te-form-group {
-    @apply mb-4;
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500;
   }
 
-  .te-input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
-  }
-
-  .te-label {
+  .form-label {
     @apply block text-sm font-medium text-gray-700 mb-1;
   }
 
-  .te-error {
-    @apply text-red-600 text-sm mt-1;
+  .form-error {
+    @apply text-error-500 text-xs mt-1;
   }
 
-  /* Button styles */
-  .te-btn {
-    @apply px-4 py-2 rounded-md font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed;
+  /* Card styles */
+  .card {
+    @apply bg-white shadow rounded-lg overflow-hidden;
   }
 
-  .te-btn-secondary {
-    @apply px-4 py-2 rounded-md font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed;
+  .card-header {
+    @apply px-6 py-4 border-b border-gray-200;
   }
 
-  .te-btn-outline {
-    @apply px-4 py-2 rounded-md font-medium text-primary-700 border border-primary-500 hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed;
+  .card-body {
+    @apply px-6 py-5;
+  }
+
+  .card-footer {
+    @apply px-6 py-4 border-t border-gray-200;
+  }
+
+  /* Animation */
+  .fade-in {
+    @apply transition-opacity duration-200 ease-in-out;
+  }
+
+  /* Status badges */
+  .badge {
+    @apply px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply badge bg-success-100 text-success-700;
+  }
+
+  .badge-warning {
+    @apply badge bg-warning-100 text-warning-700;
+  }
+
+  .badge-error {
+    @apply badge bg-error-100 text-error-700;
   }
 }

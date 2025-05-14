@@ -1,8 +1,21 @@
+// Plant models
 export interface Plant {
   id: number;
   name: string;
+  description: string;
 }
 
+export interface CreatePlantRequest {
+  name: string;
+  description: string;
+}
+
+export interface UpdatePlantRequest {
+  name: string;
+  description: string;
+}
+
+// Submission models
 export interface Submission {
   id: number;
   fullName: string;
@@ -14,6 +27,18 @@ export interface Submission {
   plantName?: string;
   createdAt: string;
   files: FileInfo[];
+}
+
+export interface SubmissionRequest {
+  fullName: string;
+  teId: string;
+  cin: string;
+  dateOfBirth: string;
+  plantId: number;
+  greyCard?: string;
+  cinImage: File;
+  picImage: File;
+  greyCardImage?: File;
 }
 
 export interface FileInfo {
@@ -30,19 +55,35 @@ export enum FileType {
   CG = 2
 }
 
-export interface SubmissionRequest {
-  fullName: string;
-  teId: string;
-  cin: string;
-  dateOfBirth: string;
-  plantId: number;
-  greyCard?: string;
-  cinImage: File;
-  picImage: File;
-  greyCardImage?: File;
-}
-
+// Export models
 export interface ExportRequest {
   format: number; // 1 for all submissions, 2 for submissions with grey cards
   plantId?: number;
+}
+
+// API response models
+export interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  data?: T;
+}
+
+export interface ApiErrorResponse {
+  message: string;
+  errors?: string[];
+  statusCode?: number;
+}
+
+// Statistics models for dashboard
+export interface PlantStatistics {
+  totalSubmissions: number;
+  withGreyCard: number;
+  withoutGreyCard: number;
+}
+
+export interface DashboardStatistics {
+  totalSubmissions: number;
+  withGreyCard: number;
+  plantCount: number;
+  recentSubmissions: Submission[];
 }

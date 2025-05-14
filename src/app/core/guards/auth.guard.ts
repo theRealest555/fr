@@ -19,7 +19,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   router.navigate(['/auth/login'], { queryParams: { returnUrl } });
 
   // Show notification
-  notificationService.warning('You need to log in to access this page');
+  notificationService.warning('Please log in to access this page');
 
   return false;
 };

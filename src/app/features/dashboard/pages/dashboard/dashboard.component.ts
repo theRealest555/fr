@@ -6,21 +6,40 @@ import { PlantService } from '../../../../core/services/plant.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Submission, Plant } from '../../../../core/models/data.models';
 import { User } from '../../../../core/models/auth.models';
+import { ButtonComponent } from '../../../../shared/components/button/button.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    ButtonComponent
+  ],
   template: `
     <div>
-      <h1 class="text-2xl font-semibold text-gray-900 mb-6">Dashboard</h1>
-
-      <!-- Welcome Section -->
+      <!-- Welcome Banner -->
       <div class="bg-white shadow rounded-lg p-6 mb-6">
-        <h2 class="text-lg font-medium text-gray-900 mb-2">Welcome, {{ currentUser?.fullName }}!</h2>
-        <p class="text-gray-600">
-          {{ welcomeMessage }}
-        </p>
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-semibold text-gray-900">Welcome, {{ currentUser?.fullName }}</h1>
+            <p class="mt-1 text-gray-600">
+              {{ welcomeMessage }}
+            </p>
+          </div>
+          <div>
+            <app-button
+              type="button"
+              variant="primary"
+              routerLink="/exports"
+            >
+              <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Export Data
+            </app-button>
+          </div>
+        </div>
       </div>
 
       <!-- Statistics Cards -->
@@ -55,7 +74,7 @@ import { User } from '../../../../core/models/auth.models';
           </div>
         </div>
 
-        <!-- Plant Count (Super Admin) or Plant Name (Regular Admin) -->
+        <!-- Plant Info -->
         <div class="bg-white shadow rounded-lg p-6">
           <div class="flex items-center">
             <div class="p-3 rounded-full bg-purple-100 text-purple-600">
@@ -65,7 +84,7 @@ import { User } from '../../../../core/models/auth.models';
             </div>
             <div class="ml-5">
               <p class="text-gray-500 text-sm">{{ isSuperAdmin ? 'Total Plants' : 'Your Plant' }}</p>
-              <p class="text-2xl font-bold text-gray-900">{{ isSuperAdmin ? plantCount : currentUser?.plantName }}</p>
+              <p class="text-2xl font-bold text-gray-900">{{ isSuperAdmin ? plants.length : currentUser?.plantName }}</p>
             </div>
           </div>
         </div>
@@ -73,8 +92,11 @@ import { User } from '../../../../core/models/auth.models';
 
       <!-- Recent Submissions -->
       <div class="bg-white shadow rounded-lg">
-        <div class="px-6 py-5 border-b border-gray-200">
+        <div class="px-6 py-5 border-b border-gray-200 flex justify-between items-center">
           <h2 class="text-lg font-medium text-gray-900">Recent Submissions</h2>
+          <a routerLink="/submissions" class="text-sm font-medium text-primary-600 hover:text-primary-500">
+            View all
+          </a>
         </div>
         <div class="p-6">
           <div *ngIf="loading" class="flex justify-center py-4">
@@ -109,16 +131,48 @@ import { User } from '../../../../core/models/auth.models';
             </ul>
 
             <div class="mt-6 flex justify-center">
-              <a routerLink="/submissions" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+              <app-button
+                type="button"
+                routerLink="/submissions"
+                variant="outline"
+              >
                 View All Submissions
-              </a>
+              </app-button>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Quick Links For Super Admins -->
+      <div *ngIf="isSuperAdmin" class="mt-6 bg-white shadow rounded-lg">
+        <div class="px-6 py-5 border-b border-gray-200">
+          <h2 class="text-lg font-medium text-gray-900">Admin Actions</h2>
+        </div>
+        <div class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a routerLink="/admin/users/add" class="flex items-center justify-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <svg class="h-6 w-6 text-primary-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+              </svg>
+              <span class="text-gray-900 font-medium">Add New Admin</span>
+            </a>
+            <a routerLink="/plants" class="flex items-center justify-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <svg class="h-6 w-6 text-primary-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              <span class="text-gray-900 font-medium">Manage Plants</span>
+            </a>
+            <a routerLink="/exports" class="flex items-center justify-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <svg class="h-6 w-6 text-primary-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span class="text-gray-900 font-medium">Export Data</span>
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
-  `,
-  styles: []
+  `
 })
 export class DashboardComponent implements OnInit {
   currentUser: User | null = null;
@@ -130,7 +184,6 @@ export class DashboardComponent implements OnInit {
   // Statistics
   totalSubmissions = 0;
   withGreyCard = 0;
-  plantCount = 0;
   welcomeMessage = '';
 
   constructor(
@@ -163,19 +216,18 @@ export class DashboardComponent implements OnInit {
     // Load plants for statistics
     this.plantService.getAllPlants().subscribe(plants => {
       this.plants = plants;
-      this.plantCount = plants.length;
     });
 
     // Load submissions based on user role
     if (this.isSuperAdmin) {
-      this.submissionService.getRecentSubmissions().subscribe(submissions => {
+      this.submissionService.getRecentSubmissions(5).subscribe(submissions => {
         this.recentSubmissions = submissions.slice(0, 5); // Show only 5 most recent
         this.totalSubmissions = submissions.length;
         this.withGreyCard = submissions.filter(s => s.greyCard && s.greyCard.trim() !== '').length;
         this.loading = false;
       });
     } else if (this.currentUser?.plantId) {
-      this.submissionService.getRecentSubmissionsByPlant(this.currentUser.plantId).subscribe(submissions => {
+      this.submissionService.getRecentSubmissionsByPlant(this.currentUser.plantId, 5).subscribe(submissions => {
         this.recentSubmissions = submissions.slice(0, 5); // Show only 5 most recent
         this.totalSubmissions = submissions.length;
         this.withGreyCard = submissions.filter(s => s.greyCard && s.greyCard.trim() !== '').length;

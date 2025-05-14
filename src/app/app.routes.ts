@@ -4,10 +4,18 @@ import { roleGuard } from './core/guards/role.guard';
 import { AdminRoles } from './core/models/auth.models';
 
 export const routes: Routes = [
-  // Public route - Make the submission form the default landing page
+  // Public routes
   {
     path: '',
+    loadComponent: () => import('./features/public/pages/home/home.component').then(c => c.HomeComponent)
+  },
+  {
+    path: 'submission-form',
     loadComponent: () => import('./features/submissions/pages/submission-form/submission-form.component').then(c => c.SubmissionFormComponent)
+  },
+  {
+    path: 'submission-confirm/:id',
+    loadComponent: () => import('./features/submissions/pages/submission-confirm/submission-confirm.component').then(c => c.SubmissionConfirmComponent)
   },
 
   // Auth routes
@@ -16,7 +24,7 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
   },
 
-  // Protected routes - Only accessible after login
+  // Admin routes - protected
   {
     path: 'dashboard',
     loadComponent: () => import('./features/dashboard/pages/dashboard/dashboard.component').then(c => c.DashboardComponent),
