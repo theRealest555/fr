@@ -43,7 +43,7 @@ import { User } from '../../core/models/auth.models';
 
             <!-- Logo and title -->
             <div class="flex-shrink-0 flex items-center">
-              <img class="h-8 w-auto" src="assets/images/logo.svg" alt="TE Connectivity Logo">
+              <img class=" w-auto" style="height: 50px;" src="assets/images/logo.png" alt="TE Connectivity Logo">
               <span class="ml-2 text-lg font-semibold text-gray-900 hidden sm:block">TE Admin</span>
             </div>
 

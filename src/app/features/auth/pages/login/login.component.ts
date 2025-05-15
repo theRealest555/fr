@@ -20,7 +20,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
       <div class="sm:mx-auto sm:w-full sm:max-w-md">
         <!-- Logo -->
         <div class="flex justify-center">
-          <img src="assets/images/logo.svg" alt="TE Connectivity Logo" class="h-12 w-auto">
+          <img src="assets/images/logo.png" alt="TE Connectivity Logo" class="h-16 w-auto">
         </div>
         <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Admin Login</h2>
         <p class="mt-2 text-center text-sm text-gray-600">

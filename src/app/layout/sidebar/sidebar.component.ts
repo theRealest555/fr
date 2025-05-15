@@ -11,8 +11,8 @@ import { AdminRoles, User } from '../../core/models/auth.models';
   template: `
     <div class="h-full flex flex-col bg-gray-800 text-white">
       <!-- Logo and Brand -->
-      <div class="p-4 flex items-center border-b border-gray-700">
-        <img src="assets/images/logo.svg" alt="TE Connectivity Logo" class="h-8 w-auto">
+      <div class="p-4 flex items-center h-12 border-b border-gray-700">
+        <img src="assets/images/logo.png" alt="TE Connectivity Logo" class="h-12 w-auto">
         <span class="ml-2 text-lg font-semibold">TE Admin</span>
       </div>
 

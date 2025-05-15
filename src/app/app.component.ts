@@ -35,7 +35,7 @@ import { LoadingComponent } from './shared/components/loading/loading.component'
             <div class="flex justify-between h-16">
               <!-- Logo -->
               <div class="flex-shrink-0 flex items-center">
-                <img src="assets/images/logo.svg" alt="TE Connectivity Logo" class="h-8 w-auto">
+                <img src="assets/images/logo.png" alt="TE Connectivity Logo" class=" h-16 w-auto">
                 <span class="ml-2 text-lg font-semibold text-gray-900">TE Connectivity</span>
               </div>
 
