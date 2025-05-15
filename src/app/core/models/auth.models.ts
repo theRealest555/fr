@@ -1,3 +1,5 @@
+// src/app/core/models/auth.models.ts
+
 // User-related models
 export interface User {
   id: string;
@@ -51,8 +53,8 @@ export interface ResetPasswordResponse {
 
 // Admin role constants
 export enum AdminRoles {
-  SuperAdmin = 'SuperAdmin',
-  RegularAdmin = 'RegularAdmin'
+  SuperAdmin = "SuperAdmin",
+  RegularAdmin = "RegularAdmin"
 }
 
 // User token

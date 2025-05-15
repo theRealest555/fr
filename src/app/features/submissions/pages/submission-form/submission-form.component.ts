@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { PlantService } from '../../../../core/services/plant.service';
 import { SubmissionService } from '../../../../core/services/submission.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { Plant } from '../../../../core/models/data.models';
+import { Plant, GenderType } from '../../../../core/models/data.models';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
@@ -40,23 +40,60 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
             </h2>
 
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <!-- Full Name -->
+              <!-- First Name -->
               <app-form-field
-                label="Full Name"
-                [control]="fullName!"
+                label="First Name"
+                [control]="firstName!"
                 [required]="true"
-                id="fullName"
+                id="firstName"
                 [customErrors]="{
-                  'maxlength': 'Full name cannot exceed 100 characters'
+                  'maxlength': 'First name cannot exceed 50 characters'
                 }"
               >
                 <input
                   type="text"
-                  id="fullName"
-                  formControlName="fullName"
+                  id="firstName"
+                  formControlName="firstName"
                   class="form-input"
-                  placeholder="Enter your full name"
+                  placeholder="Enter your first name"
                 />
+              </app-form-field>
+
+              <!-- Last Name -->
+              <app-form-field
+                label="Last Name"
+                [control]="lastName!"
+                [required]="true"
+                id="lastName"
+                [customErrors]="{
+                  'maxlength': 'Last name cannot exceed 50 characters'
+                }"
+              >
+                <input
+                  type="text"
+                  id="lastName"
+                  formControlName="lastName"
+                  class="form-input"
+                  placeholder="Enter your last name"
+                />
+              </app-form-field>
+
+              <!-- Gender -->
+              <app-form-field
+                label="Gender"
+                [control]="gender!"
+                [required]="true"
+                id="gender"
+              >
+                <select
+                  id="gender"
+                  formControlName="gender"
+                  class="form-input"
+                >
+                  <option [ngValue]="null" disabled>Select gender</option>
+                  <option [ngValue]="GenderType.Male">Male</option>
+                  <option [ngValue]="GenderType.Female">Female</option>
+                </select>
               </app-form-field>
 
               <!-- TE ID -->
@@ -165,8 +202,8 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
                 <app-file-upload
                   inputId="cinImage"
                   accept="image/jpeg,image/png"
-                  [maxSizeInMB]="5"
-                  helperText="JPG or PNG, max 5MB"
+                  [maxSizeInMB]="1"
+                  helperText="JPG or PNG, max 1MB"
                   [errorMessage]="cinImageError"
                   (fileSelected)="onCinFileSelected($event)"
                 ></app-file-upload>
@@ -178,8 +215,8 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
                 <app-file-upload
                   inputId="picImage"
                   accept="image/jpeg,image/png"
-                  [maxSizeInMB]="5"
-                  helperText="JPG or PNG, max 5MB"
+                  [maxSizeInMB]="1"
+                  helperText="JPG or PNG, max 1MB"
                   [errorMessage]="picImageError"
                   (fileSelected)="onPicFileSelected($event)"
                 ></app-file-upload>
@@ -191,8 +228,8 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
                 <app-file-upload
                   inputId="greyCardImage"
                   accept="image/jpeg,image/png"
-                  [maxSizeInMB]="5"
-                  helperText="JPG or PNG, max 5MB"
+                  [maxSizeInMB]="1"
+                  helperText="JPG or PNG, max 1MB"
                   [errorMessage]="greyCardImageError"
                   (fileSelected)="onGreyCardFileSelected($event)"
                 ></app-file-upload>
@@ -225,6 +262,7 @@ export class SubmissionFormComponent implements OnInit {
   submissionForm: FormGroup;
   plants: Plant[] = [];
   loading = false;
+  GenderType = GenderType; // Expose enum to template
 
   cinImage: File | null = null;
   picImage: File | null = null;
@@ -242,7 +280,9 @@ export class SubmissionFormComponent implements OnInit {
     private readonly router: Router
   ) {
     this.submissionForm = this.formBuilder.group({
-      fullName: ['', [Validators.required, Validators.maxLength(100)]],
+      firstName: ['', [Validators.required, Validators.maxLength(50)]],
+      lastName: ['', [Validators.required, Validators.maxLength(50)]],
+      gender: [null, Validators.required],
       teId: ['', [Validators.required, Validators.maxLength(50)]],
       cin: ['', [
         Validators.required,
@@ -279,7 +319,9 @@ export class SubmissionFormComponent implements OnInit {
   }
 
   // Getters for form controls
-  get fullName() { return this.submissionForm.get('fullName'); }
+  get firstName() { return this.submissionForm.get('firstName'); }
+  get lastName() { return this.submissionForm.get('lastName'); }
+  get gender() { return this.submissionForm.get('gender'); }
   get teId() { return this.submissionForm.get('teId'); }
   get cin() { return this.submissionForm.get('cin'); }
   get dateOfBirth() { return this.submissionForm.get('dateOfBirth'); }
@@ -301,53 +343,13 @@ export class SubmissionFormComponent implements OnInit {
     this.greyCardImageError = file ? '' : 'Grey card document is required when grey card number is provided';
   }
 
-  onFileChange(event: Event, fileType: string): void {
-    const element = event.target as HTMLInputElement;
-    if (element.files && element.files.length > 0) {
-      const file = element.files[0];
-
-      if (!this.validateFile(file)) {
-        switch (fileType) {
-          case 'cinImage':
-            this.cinImageError = 'Invalid file. Only JPG/PNG files under 5MB are allowed.';
-            this.cinImage = null;
-            break;
-          case 'picImage':
-            this.picImageError = 'Invalid file. Only JPG/PNG files under 5MB are allowed.';
-            this.picImage = null;
-            break;
-          case 'greyCardImage':
-            this.greyCardImageError = 'Invalid file. Only JPG/PNG files under 5MB are allowed.';
-            this.greyCardImage = null;
-            break;
-        }
-        return;
-      }
-
-      switch (fileType) {
-        case 'cinImage':
-          this.cinImageError = '';
-          this.cinImage = file;
-          break;
-        case 'picImage':
-          this.picImageError = '';
-          this.picImage = file;
-          break;
-        case 'greyCardImage':
-          this.greyCardImageError = '';
-          this.greyCardImage = file;
-          break;
-      }
-    }
-  }
-
   validateFile(file: File): boolean {
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!validTypes.includes(file.type)) {
       return false;
     }
 
-    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    const maxSize = 1 * 1024 * 1024; // 1MB in bytes
     if (file.size > maxSize) {
       return false;
     }

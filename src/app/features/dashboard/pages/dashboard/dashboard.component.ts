@@ -106,7 +106,7 @@ import { SubmissionsChartComponent } from '../../../../shared/components/submiss
                 <div class="flex justify-between">
                   <div>
                     <a [routerLink]="['/submissions', submission.id]" class="text-primary-600 hover:text-primary-900 font-medium">
-                      {{ submission.fullName }}
+                      {{ submission.firstName }} {{ submission.lastName }}
                     </a>
                     <p class="text-sm text-gray-500">{{ submission.teId }} - {{ submission.cin }}</p>
                     <p class="text-sm text-gray-500">

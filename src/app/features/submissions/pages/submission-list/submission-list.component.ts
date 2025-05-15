@@ -120,10 +120,11 @@ export class SubmissionListComponent implements OnInit {
   userPlantId?: number;
 
   submissionColumns = [
-    { field: 'fullName', title: 'Name' },
+    { field: 'firstName', title: 'First Name' },
+    { field: 'lastName', title: 'Last Name' },
     { field: 'teId', title: 'TE ID' },
     { field: 'cin', title: 'CIN' },
-    { field: 'dateOfBirth', title: 'Date of Birth' },
+    { field: 'dateOfBirth', title: 'Date of Birth', template: this.dateTemplate },
     { field: 'plantName', title: 'Plant' },
     {
       field: 'greyCard',
@@ -195,7 +196,8 @@ export class SubmissionListComponent implements OnInit {
     if (formValues.search) {
       const searchTerm = formValues.search.toLowerCase();
       filtered = filtered.filter(s =>
-        s.fullName.toLowerCase().includes(searchTerm) ||
+        s.firstName.toLowerCase().includes(searchTerm) ||
+        s.lastName.toLowerCase().includes(searchTerm) ||
         s.teId.toLowerCase().includes(searchTerm) ||
         s.cin.toLowerCase().includes(searchTerm)
       );
@@ -216,7 +218,8 @@ export class SubmissionListComponent implements OnInit {
     return submission.greyCard ?? 'N/A';
   }
 
-  dateTemplate(submission: Submission) {
-    return new Date(submission.createdAt).toLocaleDateString();
+  dateTemplate(submission: Submission, field: string) {
+    const dateValue = submission[field as keyof Submission] as string;
+    return dateValue ? new Date(dateValue).toLocaleDateString() : 'N/A';
   }
 }

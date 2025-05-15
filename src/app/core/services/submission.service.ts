@@ -8,10 +8,10 @@ import { Submission, SubmissionRequest, ExportRequest } from '../models/data.mod
   providedIn: 'root'
 })
 export class SubmissionService {
-  private readonly apiUrl = `${environment.apiUrl}/submissions`;
-  private readonly exportUrl = `${environment.apiUrl}/export`;
+  private readonly apiUrl = `${environment.apiUrl}/Submissions`;
+  private readonly exportUrl = `${environment.apiUrl}/Export`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) { }
 
   // Get all submissions (SuperAdmin only)
   getAllSubmissions(): Observable<Submission[]> {
@@ -52,7 +52,9 @@ export class SubmissionService {
     const formData = new FormData();
 
     // Add text fields
-    formData.append('fullName', submission.fullName);
+    formData.append('firstName', submission.firstName);
+    formData.append('lastName', submission.lastName);
+    formData.append('gender', submission.gender.toString());
     formData.append('teId', submission.teId);
     formData.append('cin', submission.cin);
     formData.append('dateOfBirth', submission.dateOfBirth);

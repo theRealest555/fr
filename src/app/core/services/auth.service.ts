@@ -19,11 +19,11 @@ import {
 export class AuthService {
   private readonly currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
-  private readonly apiUrl = `${environment.apiUrl}/auth`;
-  private readonly adminApiUrl = `${environment.apiUrl}/admin`;
+  private readonly apiUrl = `${environment.apiUrl}/Auth`;
+  private readonly adminApiUrl = `${environment.apiUrl}/Admin`;
   private readonly TOKEN_KEY = 'auth_token';
 
-  constructor(private http: HttpClient) {
+  constructor(private readonly http: HttpClient) {
     // Load user from storage if token exists
     if (this.getToken()) {
       this.loadUserProfile();

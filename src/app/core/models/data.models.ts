@@ -1,3 +1,5 @@
+// src/app/core/models/data.models.ts
+
 // Plant models
 export interface Plant {
   id: number;
@@ -18,7 +20,9 @@ export interface UpdatePlantRequest {
 // Submission models
 export interface Submission {
   id: number;
-  fullName: string;
+  firstName: string;
+  lastName: string;
+  gender: GenderType;
   teId: string;
   cin: string;
   dateOfBirth: string;
@@ -30,7 +34,9 @@ export interface Submission {
 }
 
 export interface SubmissionRequest {
-  fullName: string;
+  firstName: string;
+  lastName: string;
+  gender: GenderType;
   teId: string;
   cin: string;
   dateOfBirth: string;
@@ -53,6 +59,11 @@ export enum FileType {
   Cin = 0,
   PIC = 1,
   CG = 2
+}
+
+export enum GenderType {
+  Male = 0,
+  Female = 1
 }
 
 // Export models

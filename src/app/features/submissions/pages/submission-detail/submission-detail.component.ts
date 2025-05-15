@@ -39,10 +39,22 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
           <h2 class="text-lg font-medium text-gray-900 mb-4">Personal Information</h2>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Full Name -->
+            <!-- First Name -->
             <div>
-              <div class="text-sm font-medium text-gray-500 mb-1">Full Name</div>
-              <div class="text-base text-gray-900">{{ submission.fullName }}</div>
+              <div class="text-sm font-medium text-gray-500 mb-1">First Name</div>
+              <div class="text-base text-gray-900">{{ submission.firstName }}</div>
+            </div>
+
+            <!-- Last Name -->
+            <div>
+              <div class="text-sm font-medium text-gray-500 mb-1">Last Name</div>
+              <div class="text-base text-gray-900">{{ submission.lastName }}</div>
+            </div>
+
+            <!-- Gender -->
+            <div>
+              <div class="text-sm font-medium text-gray-500 mb-1">Gender</div>
+              <div class="text-base text-gray-900">{{ submission.gender === 0 ? 'Male' : 'Female' }}</div>
             </div>
 
             <!-- TE ID -->
@@ -243,7 +255,7 @@ export class SubmissionDetailComponent implements OnInit {
     this.fileService.downloadFile(fileId).subscribe({
       next: (blob) => {
         let fileName = '';
-        const nameBase = this.submission?.fullName.replace(/\s+/g, '_') ?? 'document';
+        const nameBase = `${this.submission?.lastName}_${this.submission?.firstName}`.replace(/\s+/g, '_') ?? 'document';
 
         switch (fileType) {
           case 'cin':

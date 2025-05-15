@@ -8,7 +8,7 @@ import { Plant, CreatePlantRequest, UpdatePlantRequest } from '../models/data.mo
   providedIn: 'root'
 })
 export class PlantService {
-  private readonly apiUrl = `${environment.apiUrl}/plants`;
+  private readonly apiUrl = `${environment.apiUrl}/Plants`;
 
   constructor(private http: HttpClient) { }
 
