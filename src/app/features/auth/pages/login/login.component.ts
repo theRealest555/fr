@@ -102,11 +102,11 @@ export class LoginComponent implements OnInit {
   returnUrl: string;
 
   constructor(
-    private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private notificationService: NotificationService
+    private readonly formBuilder: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private readonly notificationService: NotificationService
   ) {
     // Initialize the form
     this.loginForm = this.formBuilder.group({
@@ -115,7 +115,7 @@ export class LoginComponent implements OnInit {
     });
 
     // Get return URL from route parameters or default to '/dashboard'
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] ?? '/dashboard';
   }
 
   ngOnInit(): void {

@@ -39,6 +39,10 @@
             "styles": [
               "src/styles.css"
             ],
+            "optimization": false,
+            "extractLicenses": false,
+            "sourceMap": true,
+            "namedChunks": true,
             "scripts": []
           },
           "configurations": {

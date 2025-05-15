@@ -43,7 +43,7 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
               <!-- Full Name -->
               <app-form-field
                 label="Full Name"
-                [control]="fullName"
+                [control]="fullName!"
                 [required]="true"
                 id="fullName"
                 [customErrors]="{
@@ -62,7 +62,7 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
               <!-- TE ID -->
               <app-form-field
                 label="TE ID"
-                [control]="teId"
+                [control]="teId!"
                 [required]="true"
                 id="teId"
                 [customErrors]="{
@@ -81,7 +81,7 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
               <!-- CIN -->
               <app-form-field
                 label="CIN"
-                [control]="cin"
+                [control]="cin!"
                 [required]="true"
                 id="cin"
                 [customErrors]="{
@@ -101,7 +101,7 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
               <!-- Date of Birth -->
               <app-form-field
                 label="Date of Birth"
-                [control]="dateOfBirth"
+                [control]="dateOfBirth!"
                 [required]="true"
                 id="dateOfBirth"
               >
@@ -116,7 +116,7 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
               <!-- Plant -->
               <app-form-field
                 label="Plant"
-                [control]="plantId"
+                [control]="plantId!"
                 [required]="true"
                 id="plantId"
               >
@@ -133,7 +133,7 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
               <!-- Grey Card (Optional) -->
               <app-form-field
                 label="Grey Card Number"
-                [control]="greyCard"
+                [control]="greyCard!"
                 [required]="false"
                 id="greyCard"
                 [customErrors]="{
