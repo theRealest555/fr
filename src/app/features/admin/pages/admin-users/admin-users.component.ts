@@ -117,6 +117,21 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
             </button>
           </div>
         </ng-template>
+
+        <!-- Status template for data table -->
+        <ng-template #statusTemplate let-admin>
+          <span *ngIf="admin.requirePasswordChange" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+            Password Change Required
+          </span>
+          <span *ngIf="!admin.requirePasswordChange" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+            Active
+          </span>
+        </ng-template>
+
+        <!-- Role template for data table -->
+        <ng-template #roleTemplate let-admin>
+          {{ admin.isSuperAdmin ? 'Super Admin' : 'Regular Admin' }}
+        </ng-template>
       </div>
 
       <!-- Delete Confirmation Modal -->
@@ -235,12 +250,12 @@ export class AdminUsersComponent implements OnInit {
     {
       field: 'isSuperAdmin',
       title: 'Role',
-      template: this.roleTemplate
+      templateRef: 'roleTemplate'
     },
     {
       field: 'requirePasswordChange',
       title: 'Status',
-      template: this.statusTemplate
+      templateRef: 'statusTemplate'
     }
   ];
 
@@ -299,16 +314,6 @@ export class AdminUsersComponent implements OnInit {
     }
 
     this.filteredAdmins = filtered;
-  }
-
-  roleTemplate(admin: User) {
-    return admin.isSuperAdmin ? 'Super Admin' : 'Regular Admin';
-  }
-
-  statusTemplate(admin: User) {
-    return admin.requirePasswordChange ?
-      '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Password Change Required</span>' :
-      '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>';
   }
 
   resetPassword(userId: string): void {
