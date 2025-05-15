@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -24,11 +24,16 @@ import { CommonModule } from '@angular/common';
           <tr *ngFor="let item of data" class="hover:bg-gray-50">
             <td *ngFor="let column of columns"
                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              <ng-container *ngIf="column.template; else defaultCell">
+              <ng-container *ngIf="column.template && isTemplateRef(column.template); else defaultCell">
                 <ng-container *ngTemplateOutlet="column.template; context: {$implicit: item, column: column}"></ng-container>
               </ng-container>
               <ng-template #defaultCell>
-                {{ getPropertyValue(item, column.field) }}
+                <ng-container *ngIf="column.template && !isTemplateRef(column.template); else plainValue">
+                  {{ column.template(item) }}
+                </ng-container>
+                <ng-template #plainValue>
+                  {{ getPropertyValue(item, column.field) }}
+                </ng-template>
               </ng-template>
             </td>
             <td *ngIf="actionTemplate" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -60,8 +65,14 @@ export class DataTableComponent implements OnChanges {
     // You can add additional logic when inputs change
   }
 
+  isTemplateRef(template: any): boolean {
+    return template instanceof TemplateRef;
+  }
+
   getPropertyValue(item: any, field: string): any {
     // Handle nested properties with dot notation (e.g., 'user.name')
+    if (!item || !field) return '';
+
     const props = field.split('.');
     let value = item;
 
