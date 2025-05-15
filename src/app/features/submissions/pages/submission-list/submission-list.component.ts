@@ -151,24 +151,20 @@ export class SubmissionListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Get current user info
     this.authService.currentUser$.subscribe(user => {
       if (user) {
         this.isSuperAdmin = user.isSuperAdmin;
         this.userPlantId = user.plantId;
 
-        // Set default plant filter for regular admins
         if (!this.isSuperAdmin) {
           this.filterForm.get('plantId')?.setValue(user.plantId);
           this.filterForm.get('plantId')?.disable();
         }
 
-        // Load submissions based on user role
         this.loadSubmissions();
       }
     });
 
-    // Load plants
     this.plantService.getAllPlants().subscribe(plants => {
       this.plants = plants;
     });
@@ -192,12 +188,10 @@ export class SubmissionListComponent implements OnInit {
     let filtered = [...this.submissions];
     const formValues = this.filterForm.value;
 
-    // Filter by plant
     if (formValues.plantId) {
       filtered = filtered.filter(s => s.plantId === Number(formValues.plantId));
     }
 
-    // Filter by search term
     if (formValues.search) {
       const searchTerm = formValues.search.toLowerCase();
       filtered = filtered.filter(s =>
@@ -207,7 +201,6 @@ export class SubmissionListComponent implements OnInit {
       );
     }
 
-    // Filter by grey card
     if (formValues.hasGreyCard !== null) {
       if (formValues.hasGreyCard) {
         filtered = filtered.filter(s => s.greyCard && s.greyCard.trim() !== '');
@@ -219,12 +212,10 @@ export class SubmissionListComponent implements OnInit {
     this.filteredSubmissions = filtered;
   }
 
-  // Custom template for grey card
   greyCardTemplate(submission: Submission) {
     return submission.greyCard ?? 'N/A';
   }
 
-  // Custom template for date
   dateTemplate(submission: Submission) {
     return new Date(submission.createdAt).toLocaleDateString();
   }

@@ -7,9 +7,8 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { Submission, Plant } from '../../../../core/models/data.models';
 import { User } from '../../../../core/models/auth.models';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
-import { StatsCardComponent } from '../../components/stats-card/stats-card.component';
-import { SubmissionsChartComponent } from '../../components/charts/submissions-chart/submissions-chart.component';
-
+import { StatsCardComponent } from '../../../../shared/components/stats-card/stats-card.component';
+import { SubmissionsChartComponent } from '../../../../shared/components/submissions-chart/submissions-chart.component';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -175,7 +174,6 @@ export class DashboardComponent implements OnInit {
   loading = true;
   isSuperAdmin = false;
 
-  // Statistics
   totalSubmissions = 0;
   withGreyCard = 0;
   welcomeMessage = '';
@@ -187,19 +185,15 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Get current user
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       this.isSuperAdmin = user?.isSuperAdmin || false;
 
-      // Set welcome message based on role
       if (this.isSuperAdmin) {
         this.welcomeMessage = 'Welcome to the dashboard. As a Super Admin, you have access to all plants and can manage admin users.';
       } else {
         this.welcomeMessage = `Welcome to the dashboard. You are assigned to ${user?.plantName}. You can manage submissions for your plant.`;
       }
-
-      // Load data based on user role
       this.loadData();
     });
   }
@@ -207,7 +201,6 @@ export class DashboardComponent implements OnInit {
   loadData(): void {
     this.loading = true;
 
-    // Load plants for statistics
     this.plantService.getAllPlants().subscribe({
       next: plants => {
         this.plants = plants;
@@ -217,7 +210,6 @@ export class DashboardComponent implements OnInit {
       }
     });
 
-    // Load submissions based on user role
     if (this.isSuperAdmin) {
       this.submissionService.getRecentSubmissions(5).subscribe({
         next: submissions => {

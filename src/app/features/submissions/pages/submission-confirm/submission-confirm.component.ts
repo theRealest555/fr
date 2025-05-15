@@ -85,7 +85,6 @@ export class SubmissionConfirmComponent implements OnInit {
       if (id) {
         this.submissionId = id;
       } else {
-        // If no ID is provided, redirect to the submission form
         this.router.navigate(['/submission-form']);
       }
     });

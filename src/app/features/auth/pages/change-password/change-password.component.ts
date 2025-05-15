@@ -145,13 +145,11 @@ export class ChangePasswordComponent implements OnInit {
     private router: Router,
     private notificationService: NotificationService
   ) {
-    // Initialize form with validation
     this.passwordForm = this.formBuilder.group({
       currentPassword: ['', Validators.required],
       newPassword: ['', [
         Validators.required,
         Validators.minLength(8),
-        // Pattern for at least one uppercase, one lowercase, one number, and one special character
         Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
       ]],
       confirmPassword: ['', Validators.required]
@@ -159,14 +157,12 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Check if user is authenticated
     if (!this.authService.isAuthenticated()) {
       this.router.navigate(['/auth/login']);
       this.notificationService.warning('Please log in first');
       return;
     }
 
-    // Check if this is a first login (password change required)
     this.authService.currentUser$.subscribe(user => {
       if (user) {
         this.isFirstLogin = user.requirePasswordChange;
@@ -174,12 +170,10 @@ export class ChangePasswordComponent implements OnInit {
     });
   }
 
-  // Form control getters
   get currentPassword() { return this.passwordForm.get('currentPassword'); }
   get newPassword() { return this.passwordForm.get('newPassword'); }
   get confirmPassword() { return this.passwordForm.get('confirmPassword'); }
 
-  // Custom validator to check if passwords match
   passwordMatchValidator(formGroup: FormGroup) {
     const newPassword = formGroup.get('newPassword')?.value;
     const confirmPassword = formGroup.get('confirmPassword')?.value;
@@ -192,7 +186,6 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   onSubmit(): void {
-    // Stop if form is invalid
     if (this.passwordForm.invalid) {
       return;
     }
@@ -207,7 +200,6 @@ export class ChangePasswordComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        // Error will be handled by the interceptor
       }
     });
   }

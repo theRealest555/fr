@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
 export class FileService {
   private readonly apiUrl = `${environment.apiUrl}/files`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) { }
 
   /**
    * Downloads a file by ID

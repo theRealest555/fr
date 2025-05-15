@@ -238,7 +238,6 @@ export class AddAdminComponent implements OnInit {
     });
   }
 
-  // Getters for form controls
   get fullName() { return this.adminForm.get('fullName'); }
   get teid() { return this.adminForm.get('teid'); }
   get email() { return this.adminForm.get('email'); }
@@ -260,7 +259,6 @@ export class AddAdminComponent implements OnInit {
       next: (response) => {
         this.loading = false;
 
-        // If a password was not provided, show the generated one
         if (!this.adminForm.value.password) {
           this.generatedPassword = response.password ?? 'Password not returned';
           this.showPasswordModal = true;
@@ -271,7 +269,6 @@ export class AddAdminComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        // Error is already handled by the interceptor
       }
     });
   }

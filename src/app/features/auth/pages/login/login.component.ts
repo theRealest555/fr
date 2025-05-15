@@ -125,12 +125,10 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  // Getters for form controls to simplify template access
   get email() { return this.loginForm.get('email'); }
   get password() { return this.loginForm.get('password'); }
 
   onSubmit(): void {
-    // Stop if form is invalid
     if (this.loginForm.invalid) {
       return;
     }
@@ -141,19 +139,16 @@ export class LoginComponent implements OnInit {
       next: (response) => {
         this.loading = false;
 
-        // Check if password change is required
         if (response.requirePasswordChange) {
           this.router.navigate(['/auth/change-password']);
           this.notificationService.info('Please change your password');
         } else {
-          // Navigate to return URL
           this.router.navigate([this.returnUrl]);
           this.notificationService.success('Login successful');
         }
       },
       error: () => {
         this.loading = false;
-        // Error will be handled by the interceptor
       }
     });
   }

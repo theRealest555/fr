@@ -82,18 +82,14 @@ export class ModalComponent {
   @Input() closeOnBackdrop = true;
   @Input() showFooter = true;
 
-  // Icon
   @Input() icon?: any;
   @Input() iconType: 'info' | 'success' | 'warning' | 'error' | 'question' = 'info';
 
-  // Primary button
   @Input() primaryButtonText = 'Confirm';
   @Input() primaryButtonType: 'button' | 'submit' = 'button';
   @Input() primaryButtonVariant: 'primary' | 'danger' = 'primary';
   @Input() primaryButtonLoading = false;
   @Input() primaryButtonDisabled = false;
-
-  // Secondary button
   @Input() secondaryButtonText = 'Cancel';
   @Input() secondaryButtonDisabled = false;
 

@@ -162,12 +162,10 @@ export class PlantDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Check super admin status
     this.authService.currentUser$.subscribe(user => {
       this.isSuperAdmin = user?.isSuperAdmin || false;
     });
 
-    // Get plant ID from route
     this.route.paramMap.subscribe(params => {
       const idParam = params.get('id');
       if (idParam) {
@@ -197,7 +195,6 @@ export class PlantDetailComponent implements OnInit {
         this.submissions = submissions;
       },
       error: () => {
-        // Just show empty submissions if there's an error
         this.submissions = [];
       }
     });
@@ -207,12 +204,10 @@ export class PlantDetailComponent implements OnInit {
     return this.submissions.filter(s => s.greyCard && s.greyCard.trim() !== '').length;
   }
 
-  // Custom template for grey card
   greyCardTemplate(submission: Submission) {
     return submission.greyCard ?? 'N/A';
   }
 
-  // Custom template for date
   dateTemplate(submission: Submission) {
     return new Date(submission.createdAt).toLocaleDateString();
   }

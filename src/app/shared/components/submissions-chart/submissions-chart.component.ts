@@ -1,4 +1,3 @@
-// src/app/features/dashboard/components/submissions-chart/submissions-chart.component.ts
 import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Submission } from '../../../core/models/data.models';

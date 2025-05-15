@@ -179,7 +179,6 @@ export class SubmissionDetailComponent implements OnInit {
   submission: Submission | null = null;
   error = false;
 
-  // Download loading states
   downloadingCin = false;
   downloadingPhoto = false;
   downloadingGreyCard = false;
@@ -235,7 +234,6 @@ export class SubmissionDetailComponent implements OnInit {
   downloadFile(fileId: number, fileType: 'cin' | 'photo' | 'greycard'): void {
     if (!fileId) return;
 
-    // Set the appropriate loading flag
     switch (fileType) {
       case 'cin': this.downloadingCin = true; break;
       case 'photo': this.downloadingPhoto = true; break;
@@ -244,23 +242,21 @@ export class SubmissionDetailComponent implements OnInit {
 
     this.fileService.downloadFile(fileId).subscribe({
       next: (blob) => {
-        // Determine filename based on file type and submission info
         let fileName = '';
-        const nameBase = this.submission?.fullName.replace(/\s+/g, '_') || 'document';
+        const nameBase = this.submission?.fullName.replace(/\s+/g, '_') ?? 'document';
 
         switch (fileType) {
           case 'cin':
-            fileName = `CIN_${nameBase}_${this.submission?.cin || ''}.${this.getFileExtension(blob)}`;
+            fileName = `CIN_${nameBase}_${this.submission?.cin ?? ''}.${this.getFileExtension(blob)}`;
             break;
           case 'photo':
             fileName = `Photo_${nameBase}.${this.getFileExtension(blob)}`;
             break;
           case 'greycard':
-            fileName = `GreyCard_${nameBase}_${this.submission?.greyCard || ''}.${this.getFileExtension(blob)}`;
+            fileName = `GreyCard_${nameBase}_${this.submission?.greyCard ?? ''}.${this.getFileExtension(blob)}`;
             break;
         }
 
-        // Trigger the download
         this.fileService.saveFile(blob, fileName);
         this.notificationService.success('File downloaded successfully');
       },
@@ -269,7 +265,6 @@ export class SubmissionDetailComponent implements OnInit {
         console.error('Download error:', error);
       },
       complete: () => {
-        // Reset the loading flag
         switch (fileType) {
           case 'cin': this.downloadingCin = false; break;
           case 'photo': this.downloadingPhoto = false; break;

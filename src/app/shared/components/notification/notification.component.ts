@@ -73,7 +73,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 export class NotificationComponent implements OnInit {
   notifications: Notification[] = [];
 
-  constructor(private notificationService: NotificationService) {}
+  constructor(private readonly notificationService: NotificationService) {}
 
   ngOnInit(): void {
     this.notificationService.notifications$.subscribe(notifications => {

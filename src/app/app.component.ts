@@ -113,15 +113,13 @@ export class AppComponent implements OnInit {
   isLoggedIn = false;
   sidebarOpen = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   ngOnInit(): void {
-    // Subscribe to auth state
     this.authService.currentUser$.subscribe(user => {
       this.isLoggedIn = !!user;
     });
 
-    // Try to load user profile if token exists
     if (this.authService.isAuthenticated()) {
       this.authService.loadUserProfile();
     }

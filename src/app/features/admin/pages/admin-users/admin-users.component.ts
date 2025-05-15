@@ -222,11 +222,9 @@ export class AdminUsersComponent implements OnInit {
   plants: Plant[] = [];
   filterForm: FormGroup;
 
-  // Delete modal
   showDeleteModal = false;
   adminToDelete = { id: '', name: '' };
 
-  // Password reset modal
   showPasswordModal = false;
   newPassword = '';
 
@@ -303,12 +301,10 @@ export class AdminUsersComponent implements OnInit {
     this.filteredAdmins = filtered;
   }
 
-  // Custom template for role
   roleTemplate(admin: User) {
     return admin.isSuperAdmin ? 'Super Admin' : 'Regular Admin';
   }
 
-  // Custom template for status
   statusTemplate(admin: User) {
     return admin.requirePasswordChange ?
       '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Password Change Required</span>' :
@@ -340,7 +336,6 @@ export class AdminUsersComponent implements OnInit {
         this.showDeleteModal = false;
       },
       error: () => {
-        // Error is already handled by the interceptor
         this.showDeleteModal = false;
       }
     });

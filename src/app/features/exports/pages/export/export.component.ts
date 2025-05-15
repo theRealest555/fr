@@ -138,14 +138,12 @@ export class ExportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Get current user
     this.authService.currentUser$.subscribe(user => {
       if (user) {
         this.isSuperAdmin = user.isSuperAdmin;
         this.userPlantId = user.plantId;
         this.currentPlantName = user.plantName ?? '';
 
-        // Set the plant ID for regular admins
         if (!this.isSuperAdmin && this.userPlantId) {
           this.exportForm.patchValue({ plantId: this.userPlantId });
           this.exportForm.get('plantId')?.disable();
@@ -153,12 +151,10 @@ export class ExportComponent implements OnInit {
       }
     });
 
-    // Load plants
     this.plantService.getAllPlants().subscribe(plants => {
       this.plants = plants;
     });
 
-    // Check if there's a plant ID in the query params (e.g., coming from plant detail page)
     this.route.queryParams.subscribe(params => {
       if (params['plantId']) {
         this.exportForm.patchValue({ plantId: +params['plantId'] });
@@ -166,7 +162,6 @@ export class ExportComponent implements OnInit {
     });
   }
 
-  // Helper function to select format with a click anywhere on the option
   selectFormat(format: number): void {
     this.exportForm.patchValue({ format });
   }
@@ -178,7 +173,6 @@ export class ExportComponent implements OnInit {
 
     this.loading = true;
 
-    // Prepare the request (ensuring we use the userPlantId for regular admins)
     const exportRequest = {
       format: this.exportForm.value.format,
       plantId: this.isSuperAdmin ? this.exportForm.value.plantId : this.userPlantId
@@ -192,7 +186,6 @@ export class ExportComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        // Error is already handled by the interceptor
       }
     });
   }

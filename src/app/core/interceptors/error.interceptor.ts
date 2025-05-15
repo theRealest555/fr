@@ -12,23 +12,19 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error) => {
       let errorMessage: string;
 
-      // Handle client-side network errors
       if (error.error instanceof ErrorEvent) {
         errorMessage = `Network error: ${error.error.message}`;
         notificationService.error(errorMessage);
         return throwError(() => error);
       }
 
-      // Handle different HTTP status codes
       switch (error.status) {
         case HttpStatusCode.BadRequest: // 400
-          // Extract error message from response if available
           if (error.error?.message) {
             errorMessage = error.error.message;
           } else if (error.error?.errors && Array.isArray(error.error.errors)) {
             errorMessage = error.error.errors.join(', ');
           } else if (typeof error.error?.errors === 'object') {
-            // Handle object with validation errors
             const validationErrors = Object.values(error.error.errors).flat();
             errorMessage = Array.isArray(validationErrors)
               ? validationErrors.join(', ')
@@ -77,15 +73,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           errorMessage = `Error ${error.status}: ${error.statusText || 'Unknown error'}`;
       }
 
-      // Show error notification
       notificationService.error(errorMessage);
 
-      // Special case for 401 - don't propagate the error as we're redirecting
       if (error.status === HttpStatusCode.Unauthorized) {
         return EMPTY;
       }
 
-      // Pass the error on for component-level handling
       return throwError(() => error);
     })
   );
