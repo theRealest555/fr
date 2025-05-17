@@ -22,11 +22,11 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
   ],
   template: `
     <div class="max-w-3xl mx-auto">
-      <div class="bg-white shadow rounded-lg px-6 py-8">
+      <div class="bg-white dark:bg-dark-800 shadow dark:shadow-dark-md rounded-lg px-6 py-8 transition-colors duration-200">
         <!-- Header -->
         <div class="mb-8 text-center">
-          <h1 class="text-2xl font-bold text-gray-900">Submit Your Information</h1>
-          <p class="mt-2 text-gray-600">
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Submit Your Information</h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-300">
             Please complete all required fields and upload the necessary documents.
           </p>
         </div>
@@ -35,7 +35,7 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
         <form [formGroup]="submissionForm" (ngSubmit)="onSubmit()">
           <!-- Personal Information Section -->
           <div class="mb-8">
-            <h2 class="text-lg font-medium text-gray-900 mb-4 pb-2 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-dark-700">
               Personal Information
             </h2>
 
@@ -192,7 +192,7 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
 
           <!-- Documents Section -->
           <div class="mb-8">
-            <h2 class="text-lg font-medium text-gray-900 mb-4 pb-2 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-dark-700">
               Document Upload
             </h2>
 
