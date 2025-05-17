@@ -2,23 +2,42 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PlantService } from '../../../../core/services/plant.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { Plant } from '../../../../core/models/data.models';
+import { ButtonComponent } from '../../../../shared/components/button/button.component';
 
 @Component({
   selector: 'app-plant-list',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ButtonComponent],
   template: `
     <div>
-      <h1 class="text-2xl font-semibold text-gray-900 mb-6">Plants</h1>
+      <!-- Header with add button -->
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-semibold text-gray-900">Plants</h1>
 
+        <div *ngIf="isSuperAdmin">
+          <a routerLink="/plants/add" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add New Plant
+          </a>
+        </div>
+      </div>
+
+      <!-- Plants Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div *ngFor="let plant of plants" class="bg-white rounded-lg shadow overflow-hidden">
+        <div *ngFor="let plant of plants" class="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow duration-200">
           <div class="px-6 py-5 border-b border-gray-200">
             <h2 class="text-xl font-semibold text-gray-900">{{ plant.name }}</h2>
           </div>
           <div class="px-6 py-4">
-            <div class="flex justify-end">
+            <p class="text-gray-600 text-sm mb-4 line-clamp-2 h-10">
+              {{ plant.description || 'No description provided' }}
+            </p>
+            <div class="flex justify-between items-center mt-2">
+              <span class="text-sm text-gray-500">ID: {{ plant.id }}</span>
               <a [routerLink]="['/plants', plant.id]" class="text-primary-600 hover:text-primary-900 font-medium">
                 View Details
               </a>
@@ -39,6 +58,15 @@ import { Plant } from '../../../../core/models/data.models';
         </svg>
         <h2 class="text-xl font-medium text-gray-900 mb-2">No Plants Found</h2>
         <p class="text-gray-500">There are no plants to display at this time.</p>
+
+        <div *ngIf="isSuperAdmin" class="mt-4">
+          <app-button
+            routerLink="/plants/add"
+            variant="primary"
+          >
+            Add Your First Plant
+          </app-button>
+        </div>
       </div>
     </div>
   `
@@ -46,10 +74,18 @@ import { Plant } from '../../../../core/models/data.models';
 export class PlantListComponent implements OnInit {
   plants: Plant[] = [];
   loading = true;
+  isSuperAdmin = false;
 
-  constructor(private readonly plantService: PlantService) {}
+  constructor(
+    private readonly plantService: PlantService,
+    private readonly authService: AuthService
+  ) {}
 
   ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.isSuperAdmin = user?.isSuperAdmin || false;
+    });
+
     this.loadPlants();
   }
 
