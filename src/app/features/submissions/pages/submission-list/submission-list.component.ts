@@ -1,13 +1,13 @@
+// src/app/features/submissions/pages/submission-list/submission-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SubmissionService } from '../../../../core/services/submission.service';
 import { PlantService } from '../../../../core/services/plant.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Submission, Plant } from '../../../../core/models/data.models';
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
-import { ButtonComponent } from '../../../../shared/components/button/button.component';
+import { FilterComponent, FilterField } from '../../../../shared/components/filter/filter.component';
 
 @Component({
   selector: 'app-submission-list',
@@ -15,9 +15,8 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
   imports: [
     CommonModule,
     RouterModule,
-    ReactiveFormsModule,
     DataTableComponent,
-    ButtonComponent
+    FilterComponent
   ],
   template: `
     <div>
@@ -35,57 +34,10 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
       </div>
 
       <!-- Filters -->
-      <div class="bg-white shadow rounded-lg p-4 mb-6">
-        <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Plant Filter (For super admins only) -->
-            <div *ngIf="isSuperAdmin">
-              <label for="plantFilter" class="block text-sm font-medium text-gray-700 mb-1">Plant</label>
-              <select
-                id="plantFilter"
-                formControlName="plantId"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option [value]="null">All Plants</option>
-                <option *ngFor="let plant of plants" [value]="plant.id">{{ plant.name }}</option>
-              </select>
-            </div>
-
-            <!-- Search Filter -->
-            <div>
-              <label for="searchFilter" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
-              <input
-                type="text"
-                id="searchFilter"
-                formControlName="search"
-                placeholder="Search by name, TE ID, or CIN"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-
-            <!-- Grey Card Filter -->
-            <div>
-              <label for="greyCardFilter" class="block text-sm font-medium text-gray-700 mb-1">Grey Card</label>
-              <select
-                id="greyCardFilter"
-                formControlName="hasGreyCard"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option [value]="null">All</option>
-                <option [value]="true">With Grey Card</option>
-                <option [value]="false">Without Grey Card</option>
-              </select>
-            </div>
-
-            <!-- Filter Button -->
-            <div class="flex items-end">
-              <app-button type="submit" variant="primary" size="md">
-                Apply Filters
-              </app-button>
-            </div>
-          </div>
-        </form>
-      </div>
+      <app-filter 
+        [filterConfig]="filterConfig" 
+        (filtersApplied)="applyFilters($event)"
+      ></app-filter>
 
       <!-- Submissions Table -->
       <div class="bg-white shadow rounded-lg">
@@ -115,7 +67,7 @@ export class SubmissionListComponent implements OnInit {
   submissions: Submission[] = [];
   filteredSubmissions: Submission[] = [];
   plants: Plant[] = [];
-  filterForm: FormGroup;
+  filterConfig: FilterField[] = [];
   isSuperAdmin = false;
   userPlantId?: number;
 
@@ -139,17 +91,10 @@ export class SubmissionListComponent implements OnInit {
   ];
 
   constructor(
-    private readonly formBuilder: FormBuilder,
     private readonly submissionService: SubmissionService,
     private readonly plantService: PlantService,
     private readonly authService: AuthService
-  ) {
-    this.filterForm = this.formBuilder.group({
-      plantId: [null],
-      search: [''],
-      hasGreyCard: [null]
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
@@ -157,44 +102,82 @@ export class SubmissionListComponent implements OnInit {
         this.isSuperAdmin = user.isSuperAdmin;
         this.userPlantId = user.plantId;
 
-        if (!this.isSuperAdmin) {
-          this.filterForm.get('plantId')?.setValue(user.plantId);
-          this.filterForm.get('plantId')?.disable();
-        }
-
         this.loadSubmissions();
       }
     });
 
     this.plantService.getAllPlants().subscribe(plants => {
       this.plants = plants;
+      this.setupFilterConfig();
     });
+  }
+
+  setupFilterConfig(): void {
+    let filterFields: FilterField[] = [];
+
+    // Only super admins can filter by plant
+    if (this.isSuperAdmin) {
+      filterFields.push({
+        name: 'plantId',
+        label: 'Plant',
+        type: 'select',
+        placeholder: 'All Plants',
+        options: this.plants.map(plant => ({
+          value: plant.id,
+          label: plant.name
+        }))
+      });
+    }
+
+    // Add remaining filter fields
+    filterFields = [
+      ...filterFields,
+      {
+        name: 'search',
+        label: 'Search',
+        type: 'text',
+        placeholder: 'Search by name, TE ID, or CIN'
+      },
+      {
+        name: 'hasGreyCard',
+        label: 'Grey Card',
+        type: 'select',
+        placeholder: 'All',
+        options: [
+          { value: 'true', label: 'With Grey Card' },
+          { value: 'false', label: 'Without Grey Card' }
+        ]
+      }
+    ];
+
+    this.filterConfig = filterFields;
   }
 
   loadSubmissions(): void {
     if (this.isSuperAdmin) {
       this.submissionService.getAllSubmissions().subscribe(submissions => {
         this.submissions = submissions;
-        this.applyFilters();
+        this.filteredSubmissions = [...submissions];
       });
     } else if (this.userPlantId) {
       this.submissionService.getSubmissionsByPlant(this.userPlantId).subscribe(submissions => {
         this.submissions = submissions;
-        this.applyFilters();
+        this.filteredSubmissions = [...submissions];
       });
     }
   }
 
-  applyFilters(): void {
+  applyFilters(filters: any): void {
     let filtered = [...this.submissions];
-    const formValues = this.filterForm.value;
 
-    if (formValues.plantId) {
-      filtered = filtered.filter(s => s.plantId === Number(formValues.plantId));
+    // Filter by plant
+    if (filters.plantId) {
+      filtered = filtered.filter(s => s.plantId === Number(filters.plantId));
     }
 
-    if (formValues.search) {
-      const searchTerm = formValues.search.toLowerCase();
+    // Filter by search term
+    if (filters.search) {
+      const searchTerm = filters.search.toLowerCase();
       filtered = filtered.filter(s =>
         s.firstName.toLowerCase().includes(searchTerm) ||
         s.lastName.toLowerCase().includes(searchTerm) ||
@@ -203,8 +186,10 @@ export class SubmissionListComponent implements OnInit {
       );
     }
 
-    if (formValues.hasGreyCard !== null) {
-      if (formValues.hasGreyCard) {
+    // Filter by grey card
+    if (filters.hasGreyCard !== null && filters.hasGreyCard !== undefined) {
+      const hasCard = filters.hasGreyCard === 'true';
+      if (hasCard) {
         filtered = filtered.filter(s => s.greyCard && s.greyCard.trim() !== '');
       } else {
         filtered = filtered.filter(s => !s.greyCard || s.greyCard.trim() === '');

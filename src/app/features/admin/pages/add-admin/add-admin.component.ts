@@ -1,3 +1,4 @@
+// src/app/features/admin/pages/add-admin/add-admin.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -6,7 +7,6 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { PlantService } from '../../../../core/services/plant.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { Plant } from '../../../../core/models/data.models';
-import { AdminRoles } from '../../../../core/models/auth.models';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 
 @Component({
@@ -82,7 +82,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
         <div class="mb-4">
           <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
             Password (Optional)
-            <span class="text-gray-500 font-normal"> - If left blank, a strong password will be generated</span>
+            <span class="text-gray-500 font-normal"> - If left blank, TE ID will be used as initial password</span>
           </label>
           <input
             type="password"
@@ -251,16 +251,18 @@ export class AddAdminComponent implements OnInit {
 
     this.loading = true;
 
-    const adminData = {
-      ...this.adminForm.value
-    };
+    // Create a copy of the form values
+    const adminData = {...this.adminForm.value};
+    
+    // If password is empty, use TE ID as the password
+    adminData.password ??= adminData.teid;
 
     this.authService.registerAdmin(adminData).subscribe({
       next: (response) => {
         this.loading = false;
 
-        if (!this.adminForm.value.password) {
-          this.generatedPassword = response.password ?? 'Password not returned';
+        if (response.password) {
+          this.generatedPassword = response.password;
           this.showPasswordModal = true;
         } else {
           this.notificationService.success('Admin user created successfully');

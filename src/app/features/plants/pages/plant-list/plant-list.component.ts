@@ -1,3 +1,4 @@
+// src/app/features/plants/pages/plant-list/plant-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -5,11 +6,12 @@ import { PlantService } from '../../../../core/services/plant.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Plant } from '../../../../core/models/data.models';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
+import { FilterComponent, FilterField } from '../../../../shared/components/filter/filter.component';
 
 @Component({
   selector: 'app-plant-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, ButtonComponent],
+  imports: [CommonModule, RouterModule, ButtonComponent, FilterComponent],
   template: `
     <div>
       <!-- Header with add button -->
@@ -26,9 +28,15 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
         </div>
       </div>
 
+      <!-- Filter component -->
+      <app-filter 
+        [filterConfig]="filterConfig" 
+        (filtersApplied)="applyFilters($event)"
+      ></app-filter>
+
       <!-- Plants Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div *ngFor="let plant of plants" class="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow duration-200">
+        <div *ngFor="let plant of filteredPlants" class="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow duration-200">
           <div class="px-6 py-5 border-b border-gray-200">
             <h2 class="text-xl font-semibold text-gray-900">{{ plant.name }}</h2>
           </div>
@@ -52,12 +60,12 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
       </div>
 
       <!-- Empty state -->
-      <div *ngIf="!loading && plants.length === 0" class="bg-white shadow rounded-lg p-6 text-center">
+      <div *ngIf="!loading && filteredPlants.length === 0" class="bg-white shadow rounded-lg p-6 text-center">
         <svg class="h-16 w-16 text-gray-400 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
         <h2 class="text-xl font-medium text-gray-900 mb-2">No Plants Found</h2>
-        <p class="text-gray-500">There are no plants to display at this time.</p>
+        <p class="text-gray-500">There are no plants matching your criteria.</p>
 
         <div *ngIf="isSuperAdmin" class="mt-4">
           <app-button
@@ -73,8 +81,10 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
 })
 export class PlantListComponent implements OnInit {
   plants: Plant[] = [];
+  filteredPlants: Plant[] = [];
   loading = true;
   isSuperAdmin = false;
+  filterConfig: FilterField[] = [];
 
   constructor(
     private readonly plantService: PlantService,
@@ -87,6 +97,18 @@ export class PlantListComponent implements OnInit {
     });
 
     this.loadPlants();
+    this.setupFilterConfig();
+  }
+
+  setupFilterConfig(): void {
+    this.filterConfig = [
+      {
+        name: 'search',
+        label: 'Search',
+        type: 'text',
+        placeholder: 'Search by plant name or description'
+      }
+    ];
   }
 
   loadPlants(): void {
@@ -94,11 +116,27 @@ export class PlantListComponent implements OnInit {
     this.plantService.getAllPlants().subscribe({
       next: (plants) => {
         this.plants = plants;
+        this.filteredPlants = plants;
         this.loading = false;
       },
       error: () => {
         this.loading = false;
       }
     });
+  }
+
+  applyFilters(filters: any): void {
+    let filtered = [...this.plants];
+    
+    // Filter by search term
+    if (filters.search) {
+      const searchTerm = filters.search.toLowerCase();
+      filtered = filtered.filter(plant => 
+        plant.name.toLowerCase().includes(searchTerm) || 
+        plant.description?.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    this.filteredPlants = filtered;
   }
 }

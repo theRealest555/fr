@@ -1,14 +1,16 @@
+// src/app/features/admin/pages/admin-users/admin-users.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { PlantService } from '../../../../core/services/plant.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { User } from '../../../../core/models/auth.models';
 import { Plant } from '../../../../core/models/data.models';
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
-import { ButtonComponent } from '../../../../shared/components/button/button.component';
+import { FilterComponent, FilterField } from '../../../../shared/components/filter/filter.component';
+import { AdminStatusComponent } from '../../../../shared/components/admin-status/admin-status.component';
 
 @Component({
   selector: 'app-admin-users',
@@ -18,8 +20,9 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
     RouterModule,
     ReactiveFormsModule,
     DataTableComponent,
-    ButtonComponent
-  ],
+    FilterComponent,
+    AdminStatusComponent
+],
   template: `
     <div>
       <div class="flex justify-between items-center mb-6">
@@ -28,7 +31,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
         <div>
           <a
             routerLink="/admin/users/add"
-            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
           >
             <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -39,57 +42,10 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
       </div>
 
       <!-- Filters -->
-      <div class="bg-white shadow rounded-lg p-4 mb-6">
-        <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Plant Filter -->
-            <div>
-              <label for="plantFilter" class="block text-sm font-medium text-gray-700 mb-1">Plant</label>
-              <select
-                id="plantFilter"
-                formControlName="plantId"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option [value]="null">All Plants</option>
-                <option *ngFor="let plant of plants" [value]="plant.id">{{ plant.name }}</option>
-              </select>
-            </div>
-
-            <!-- Role Filter -->
-            <div>
-              <label for="roleFilter" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
-              <select
-                id="roleFilter"
-                formControlName="isSuperAdmin"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option [value]="null">All Roles</option>
-                <option [value]="true">Super Admin</option>
-                <option [value]="false">Regular Admin</option>
-              </select>
-            </div>
-
-            <!-- Search Filter -->
-            <div>
-              <label for="searchFilter" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
-              <input
-                type="text"
-                id="searchFilter"
-                formControlName="search"
-                placeholder="Search by name or email"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-
-            <!-- Filter Button -->
-            <div class="flex items-end">
-              <app-button type="submit" variant="primary" size="md">
-                Apply Filters
-              </app-button>
-            </div>
-          </div>
-        </form>
-      </div>
+      <app-filter 
+        [filterConfig]="filterConfig" 
+        (filtersApplied)="applyFilters($event)"
+      ></app-filter>
 
       <!-- Admin Users Table -->
       <div class="bg-white shadow rounded-lg">
@@ -120,12 +76,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
 
         <!-- Status template for data table -->
         <ng-template #statusTemplate let-admin>
-          <span *ngIf="admin.requirePasswordChange" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-            Password Change Required
-          </span>
-          <span *ngIf="!admin.requirePasswordChange" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-            Active
-          </span>
+          <app-admin-status [requirePasswordChange]="admin.requirePasswordChange"></app-admin-status>
         </ng-template>
 
         <!-- Role template for data table -->
@@ -235,7 +186,7 @@ export class AdminUsersComponent implements OnInit {
   admins: User[] = [];
   filteredAdmins: User[] = [];
   plants: Plant[] = [];
-  filterForm: FormGroup;
+  filterConfig: FilterField[] = [];
 
   showDeleteModal = false;
   adminToDelete = { id: '', name: '' };
@@ -260,17 +211,10 @@ export class AdminUsersComponent implements OnInit {
   ];
 
   constructor(
-    private readonly formBuilder: FormBuilder,
     private readonly authService: AuthService,
     private readonly plantService: PlantService,
     private readonly notificationService: NotificationService
-  ) {
-    this.filterForm = this.formBuilder.group({
-      plantId: [null],
-      isSuperAdmin: [null],
-      search: ['']
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.loadAdmins();
@@ -287,26 +231,60 @@ export class AdminUsersComponent implements OnInit {
   loadPlants(): void {
     this.plantService.getAllPlants().subscribe(plants => {
       this.plants = plants;
+      
+      // Set up filter configuration after plants are loaded
+      this.setupFilterConfig();
     });
   }
 
-  applyFilters(): void {
-    let filtered = [...this.admins];
-    const formValues = this.filterForm.value;
+  setupFilterConfig(): void {
+    this.filterConfig = [
+      {
+        name: 'plantId',
+        label: 'Plant',
+        type: 'select',
+        placeholder: 'All Plants',
+        options: this.plants.map(plant => ({
+          value: plant.id,
+          label: plant.name
+        }))
+      },
+      {
+        name: 'isSuperAdmin',
+        label: 'Role',
+        type: 'select',
+        placeholder: 'All Roles',
+        options: [
+          { value: 'true', label: 'Super Admin' },
+          { value: 'false', label: 'Regular Admin' }
+        ]
+      },
+      {
+        name: 'search',
+        label: 'Search',
+        type: 'text',
+        placeholder: 'Search by name or email'
+      }
+    ];
+  }
 
+  applyFilters(filters: any): void {
+    let filtered = [...this.admins];
+    
     // Filter by plant
-    if (formValues.plantId) {
-      filtered = filtered.filter(a => a.plantId === Number(formValues.plantId));
+    if (filters.plantId) {
+      filtered = filtered.filter(a => a.plantId === Number(filters.plantId));
     }
 
     // Filter by role
-    if (formValues.isSuperAdmin !== null) {
-      filtered = filtered.filter(a => a.isSuperAdmin === formValues.isSuperAdmin);
+    if (filters.isSuperAdmin !== null && filters.isSuperAdmin !== undefined) {
+      const isSuper = filters.isSuperAdmin === 'true';
+      filtered = filtered.filter(a => a.isSuperAdmin === isSuper);
     }
 
     // Filter by search term
-    if (formValues.search) {
-      const searchTerm = formValues.search.toLowerCase();
+    if (filters.search) {
+      const searchTerm = filters.search.toLowerCase();
       filtered = filtered.filter(a =>
         a.fullName.toLowerCase().includes(searchTerm) ||
         a.email.toLowerCase().includes(searchTerm)
