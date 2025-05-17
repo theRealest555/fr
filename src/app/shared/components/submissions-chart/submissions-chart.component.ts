@@ -38,28 +38,35 @@ import { ThemeService } from '../../../core/services/theme.service';
         <div class="relative h-64">
           <!-- Bar Chart -->
           <div *ngIf="chartType === 'bar'" class="h-full flex items-end space-x-2">
-            <div *ngFor="let count of weeklyCounts; let i = index" class="flex-1 flex flex-col items-center">
-              <!-- Bar -->
-              <div class="relative w-full group">
-                <div
-                  class="w-full bg-primary-100 dark:bg-primary-900/20 rounded-t transition-all duration-700 ease-out"
-                  [style.height.%]="getPercentage(count)"
-                >
-                  <!-- Tooltip -->
-                  <div *ngIf="count > 0" class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <div class="bg-gray-900 dark:bg-dark-600 text-white text-xs rounded py-1 px-2">
-                      {{ count }} submissions
+            <ng-container *ngFor="let count of weeklyCounts; let i = index">
+              <div class="flex-1 flex flex-col items-center">
+                <!-- Bar -->
+                <div class="relative w-full group flex items-end h-full">
+                  <!-- Actually render an orange background for day with submissions -->
+                  <div *ngIf="count > 0"
+                    class="w-full bg-orange-500 dark:bg-orange-500 rounded-t border border-orange-600 dark:border-orange-600 shadow-md transition-all duration-300"
+                    [style.height.%]="getBarHeight(count)">
+                    <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                      <div class="bg-gray-900 text-white text-xs py-1 px-2 rounded shadow-lg">
+                        {{ count }} submission{{ count !== 1 ? 's' : '' }}
+                      </div>
+                      <div class="w-2 h-2 bg-gray-900 transform rotate-45 absolute -bottom-1 left-1/2 -translate-x-1/2"></div>
                     </div>
-                    <div class="w-2 h-2 bg-gray-900 dark:bg-dark-600 transform rotate-45 absolute -bottom-1 left-1/2 -translate-x-1/2"></div>
+                  </div>
+
+                  <!-- Empty day marker - reduced visibility -->
+                  <div *ngIf="count === 0"
+                    class="w-full bg-gray-200 dark:bg-gray-700 rounded-t opacity-30 transition-all duration-300"
+                    [style.height.px]="2">
                   </div>
                 </div>
-              </div>
 
-              <!-- X-axis label -->
-              <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                {{ weekDays[i] }}
+                <!-- X-axis label -->
+                <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                  {{ weekDays[i] }}
+                </div>
               </div>
-            </div>
+            </ng-container>
           </div>
 
           <!-- Line Chart -->
@@ -73,13 +80,13 @@ import { ThemeService } from '../../../core/services/theme.service';
               <!-- Area under the line -->
               <path
                 [attr.d]="getAreaPath()"
-                class="fill-primary-100/50 dark:fill-primary-900/20 transition-all duration-700 ease-out"
+                class="fill-orange-100/70 dark:fill-orange-900/40 transition-all duration-700 ease-out"
               ></path>
 
               <!-- Line itself -->
               <path
                 [attr.d]="getLinePath()"
-                class="stroke-primary-500 dark:stroke-primary-400 fill-none transition-all duration-700 ease-out"
+                class="stroke-orange-500 dark:stroke-orange-500 fill-none transition-all duration-700 ease-out"
                 stroke-width="3"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -93,11 +100,11 @@ import { ThemeService } from '../../../core/services/theme.service';
                   *ngIf="count > 0"
                   [attr.cx]="getPointX(i)"
                   [attr.cy]="getPointY(count)"
-                  r="4"
-                  class="fill-white dark:fill-dark-800 stroke-primary-500 dark:stroke-primary-400 stroke-2"
+                  r="5"
+                  class="fill-white dark:fill-dark-800 stroke-orange-500 dark:stroke-orange-500 stroke-2"
                 >
                   <!-- Data point tooltips -->
-                  <title>{{ count }} submissions</title>
+                  <title>{{ count }} submission{{ count !== 1 ? 's' : '' }}</title>
                 </circle>
               </g>
             </svg>
@@ -109,12 +116,17 @@ import { ThemeService } from '../../../core/services/theme.service';
               </div>
             </div>
           </div>
+
+          <!-- "No data" message -->
+          <div *ngIf="totalThisWeek === 0" class="absolute inset-0 flex items-center justify-center">
+            <p class="text-gray-500 dark:text-gray-400 text-sm">No submissions in this period</p>
+          </div>
         </div>
 
         <!-- Legend / Summary -->
         <div class="mt-6 flex justify-between items-center">
           <div class="flex items-center">
-            <div class="h-3 w-3 rounded-full bg-primary-500 dark:bg-primary-400 mr-2"></div>
+            <div class="h-3 w-3 rounded-full bg-orange-500 dark:bg-orange-500 mr-2"></div>
             <span class="text-sm text-gray-700 dark:text-gray-300">Submissions</span>
           </div>
           <div class="flex space-x-6">
@@ -227,6 +239,10 @@ export class SubmissionsChartComponent implements OnInit, OnChanges, AfterViewIn
     } else {
       this.weeklyChange = this.totalThisWeek > 0 ? 100 : 0;
     }
+
+    console.log('Weekly counts:', this.weeklyCounts);
+    console.log('Max count:', this.maxCount);
+    console.log('Total this week:', this.totalThisWeek);
   }
 
   // Generate sample data if no data is provided
@@ -238,12 +254,26 @@ export class SubmissionsChartComponent implements OnInit, OnChanges, AfterViewIn
     this.weeklyChange = 12; // Sample percentage change
   }
 
-  getPercentage(count: number): number {
-    if (this.maxCount <= 0) return 0;
-    return Math.max(5, (count / this.maxCount) * 100); // At least 5% height for visibility
+  // Calculate bar heights with special handling for single submissions
+  getBarHeight(count: number): number {
+    // If there are no submissions, return 0 height
+    if (this.totalThisWeek === 0) return 0;
+
+    // If this is the only day with submissions, make it prominent
+    if (count > 0 && this.totalThisWeek === 1) {
+      return 40; // Fixed height for single submissions (40%)
+    }
+
+    // Normal scaling based on max count, with minimum height of 20%
+    return Math.max(20, (count / this.maxCount) * 100);
   }
 
   setChartType(type: 'bar' | 'line'): void {
+    // If the chart type hasn't changed, do nothing
+    if (this.chartType === type) {
+      return;
+    }
+
     this.chartType = type;
 
     // Need to wait for the new chart to be rendered
@@ -252,23 +282,29 @@ export class SubmissionsChartComponent implements OnInit, OnChanges, AfterViewIn
     }, 50);
   }
 
-  // Animation for bars and line chart
+  // Animation for line chart
   animateChart(): void {
-    if (this.chartType === 'bar') {
-      // Bar chart animation is handled by CSS
-    } else if (this.chartType === 'line' && this.lineChartElement) {
-      // Animate the line path
-      const path = this.lineChartElement.nativeElement.querySelector('path:nth-child(2)');
-      if (path) {
-        this.pathLength = (path as SVGPathElement).getTotalLength();
-        this.animatedDashOffset = 0;
+    try {
+      if (this.chartType === 'line') {
+        // Make sure lineChartElement is available before trying to use it
+        if (!this.lineChartElement || !this.lineChartElement.nativeElement) {
+          return;
+        }
 
-        // Trigger animation
-        this.animatedDashOffset = this.pathLength;
-        setTimeout(() => {
-          this.animatedDashOffset = 0;
-        }, 50);
+        const path = this.lineChartElement.nativeElement.querySelector('path:nth-child(2)');
+        if (path) {
+          this.pathLength = (path as SVGPathElement).getTotalLength();
+
+          // Trigger animation
+          this.animatedDashOffset = this.pathLength;
+          setTimeout(() => {
+            this.animatedDashOffset = 0;
+          }, 50);
+        }
       }
+    } catch (error) {
+      console.error('Error in chart animation:', error);
+      // Fail gracefully, don't break the UI
     }
   }
 
@@ -284,7 +320,9 @@ export class SubmissionsChartComponent implements OnInit, OnChanges, AfterViewIn
 
     const effectiveWidth = width - (padding * 2);
     const effectiveHeight = height - (padding * 2);
-    const step = effectiveWidth / (this.weeklyCounts.length - 1);
+
+    // Avoid division by zero if there's only one data point
+    const step = this.weeklyCounts.length > 1 ? effectiveWidth / (this.weeklyCounts.length - 1) : 0;
 
     // Start path at the first point
     if (this.weeklyCounts.length > 0) {
@@ -315,7 +353,9 @@ export class SubmissionsChartComponent implements OnInit, OnChanges, AfterViewIn
 
     const effectiveWidth = width - (padding * 2);
     const effectiveHeight = height - (padding * 2);
-    const step = effectiveWidth / (this.weeklyCounts.length - 1);
+
+    // Avoid division by zero if there's only one data point
+    const step = this.weeklyCounts.length > 1 ? effectiveWidth / (this.weeklyCounts.length - 1) : 0;
 
     // Start path at the bottom left
     path = `M ${padding},${height - padding}`;
