@@ -22,17 +22,17 @@ import { FormFieldComponent } from '../../../../shared/components/form-field/for
       <!-- Header with back button -->
       <div class="flex justify-between items-center mb-6">
         <div class="flex items-center">
-          <button (click)="goBack()" class="mr-2 text-gray-500 hover:text-gray-700">
+          <button (click)="goBack()" class="mr-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </button>
-          <h1 class="text-2xl font-semibold text-gray-900">{{ isEditMode ? 'Edit Plant' : 'Add New Plant' }}</h1>
+          <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ isEditMode ? 'Edit Plant' : 'Add New Plant' }}</h1>
         </div>
       </div>
 
       <!-- Plant Form -->
-      <div class="bg-white shadow rounded-lg px-6 py-8">
+      <div class="bg-white dark:bg-dark-800 shadow dark:shadow-dark-md rounded-lg px-6 py-8 transition-colors duration-200">
         <form [formGroup]="plantForm" (ngSubmit)="onSubmit()">
           <!-- Name Field -->
           <app-form-field
