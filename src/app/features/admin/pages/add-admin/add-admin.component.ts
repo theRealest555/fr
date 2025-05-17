@@ -100,6 +100,10 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
           <div *ngIf="password?.value" class="mt-2 text-xs text-gray-500">
             The password must be at least 8 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.
           </div>
+          <div *ngIf="!password?.value" class="mt-2 text-xs text-gray-500">
+            When left empty, the user will log in with their TE ID as the initial password.
+            They will be required to change it on first login.
+          </div>
         </div>
 
         <!-- Plant -->
