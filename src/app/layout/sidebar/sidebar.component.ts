@@ -122,7 +122,7 @@ export class SidebarComponent implements OnInit {
   isSuperAdmin = false;
   currentYear = new Date().getFullYear();
 
-  constructor(private authService: AuthService) { }
+  constructor(private readonly authService: AuthService) { }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {

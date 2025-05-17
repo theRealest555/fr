@@ -1,4 +1,3 @@
-// src/app/shared/components/filter/filter.component.ts
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -54,7 +53,7 @@ import { ButtonComponent } from '../button/button.component';
                   class="w-full px-3 py-2 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors duration-150"
                 >
                   <option [ngValue]="null">{{ field.placeholder || 'All' }}</option>
-                  <option *ngFor="let option of field.options" [value]="option.value">{{ option.label }}</option>
+                  <option *ngFor="let option of field.options" [ngValue]="option.value">{{ option.label }}</option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
                   <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -184,6 +183,7 @@ export class FilterComponent implements OnInit, OnChanges {
 
     // Only add controls for the fields that exist in the config
     this.filterConfig.forEach(field => {
+      // Important: Use ngValue in template and preserve the type here
       formGroup[field.name] = [field.defaultValue !== undefined ? field.defaultValue : null];
 
       // Store options for display values
@@ -196,13 +196,18 @@ export class FilterComponent implements OnInit, OnChanges {
   }
 
   applyFilters(): void {
-    // Add animation class
+    // Get form values and preserve their types
     const formValues = this.filterForm.value;
+
+    // Debug log to verify values
+    console.log('Applying filters:', formValues);
+
     this.filtersApplied.emit(formValues);
   }
 
   resetFilters(): void {
     this.filterForm.reset();
+    // Emit the reset values to update parent component
     this.filtersApplied.emit(this.filterForm.value);
   }
 
@@ -218,6 +223,7 @@ export class FilterComponent implements OnInit, OnChanges {
     const values = this.filterForm.value;
     return Object.keys(values).some(key => {
       const value = values[key];
+      // Also check for empty strings
       return value !== null && value !== undefined && value !== '';
     });
   }
@@ -238,7 +244,8 @@ export class FilterComponent implements OnInit, OnChanges {
           // For select fields, get the label instead of the value
           if (filterConfig.type === 'select' && this.fieldOptionsMap.has(key)) {
             const options = this.fieldOptionsMap.get(key);
-            const option = options?.find(o => o.value == value); // Use loose equality for comparing
+            // Use loose comparison for comparing primitive values (handle numbers vs strings)
+            const option = options?.find(o => String(o.value) === String(value));
             if (option) {
               displayValue = option.label;
             }
@@ -260,6 +267,7 @@ export class FilterComponent implements OnInit, OnChanges {
   clearFilter(name: string): void {
     if (this.filterForm.contains(name)) {
       this.filterForm.get(name)?.reset();
+      // Apply filters after clearing
       this.applyFilters();
     }
   }

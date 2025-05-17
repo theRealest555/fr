@@ -21,7 +21,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
                 <!-- Sort indicator -->
                 <div *ngIf="column.sortable" class="ml-1 flex-shrink-0">
-                  <svg *ngIf="sortColumn !== column.field" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <svg *ngIf="sortColumn !== column.field" class="h-4 w-4 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M5 10a1 1 0 0 1 1-1h8a1 1 0 0 1 0 2H6a1 1 0 0 1-1-1Z" />
                     <path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .55.24l3.25 3.5a.75.75 0 1 1-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 0 1-1.1-1.02l3.25-3.5A.75.75 0 0 1 10 3Zm-3.25 9.5a.75.75 0 0 1 1.1 1.02l2.7 2.908 2.7-2.908a.75.75 0 1 1 1.1 1.02l-3.25 3.5a.75.75 0 0 1-1.1 0l-3.25-3.5a.75.75 0 0 1 0-1.02Z" clip-rule="evenodd" />
                   </svg>
@@ -146,6 +146,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     </div>
   `
 })
+
 export class DataTableComponent implements OnChanges {
   @Input() columns: Array<{
     field: string;
@@ -176,7 +177,7 @@ export class DataTableComponent implements OnChanges {
   sortDirection: 'asc' | 'desc' = 'asc';
   Math = Math; // Expose Math to the template
 
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor(private readonly sanitizer: DomSanitizer) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data'] || changes['pageSize']) {
@@ -261,9 +262,13 @@ export class DataTableComponent implements OnChanges {
         }
 
         // For numbers, dates, etc.
-        return this.sortDirection === 'asc'
-          ? (aValue < bValue ? -1 : 1)
-          : (bValue < aValue ? -1 : 1);
+        if (this.sortDirection === 'asc') {
+          if (aValue < bValue) return -1;
+          return 1;
+        } else {
+          if (bValue < aValue) return -1;
+          return 1;
+        }
       });
 
       this.data = sortedData;

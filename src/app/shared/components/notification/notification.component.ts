@@ -169,13 +169,13 @@ export class NotificationComponent implements OnInit {
   }
 
   getProgressWidth(notification: Notification): number {
-    return this.progressMap.get(notification.id) || 0;
+    return this.progressMap.get(notification.id) ?? 0;
   }
 
   private startProgressBar(notification: Notification): void {
     if (!notification.autoClose) return;
 
-    const duration = notification.duration || 5000;
+    const duration = notification.duration ?? 5000;
     const startTime = Date.now();
     const updateInterval = 50; // Update every 50ms
 

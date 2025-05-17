@@ -4,11 +4,10 @@ import { AbstractControl } from '@angular/forms';
 
 @Component({
   selector: 'app-form-field',
-  standalone: true,
   imports: [CommonModule],
   template: `
     <div class="mb-4 transition-all duration-150 hover:shadow-sm">
-      <label [for]="id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center">
+      <label [for]="id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 items-center">
         {{ label }}
         <span *ngIf="required" class="text-red-500 ml-1">*</span>
 
@@ -59,17 +58,7 @@ import { AbstractControl } from '@angular/forms';
         {{ hint }}
       </div>
     </div>
-  `,
-  styles: [`
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .animate-fade-in {
-      animation: fadeIn 0.2s ease-out forwards;
-    }
-  `]
+  `
 })
 export class FormFieldComponent {
   @Input() label = '';

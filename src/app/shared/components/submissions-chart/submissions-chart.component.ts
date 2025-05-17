@@ -155,7 +155,7 @@ export class SubmissionsChartComponent implements OnInit, AfterViewInit {
   chartHeight = 0;
   isDarkMode = false;
 
-  constructor(private themeService: ThemeService) {}
+  constructor(private readonly themeService: ThemeService) {}
 
   ngOnInit(): void {
     this.processData();

@@ -51,7 +51,7 @@ import { ThemeService } from '../../../core/services/theme.service';
 export class ThemeToggleComponent implements OnInit {
   isDarkMode = false;
 
-  constructor(private themeService: ThemeService) {}
+  constructor(private readonly themeService: ThemeService) {}
 
   ngOnInit(): void {
     this.themeService.isDarkMode().subscribe(isDark => {

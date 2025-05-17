@@ -298,7 +298,8 @@ export class DashboardComponent implements OnInit {
       const date = new Date(dateString);
       return format(date, 'MMM dd, yyyy HH:mm');
     } catch (e) {
-      return dateString;
+      console.error('Error formatting date:', e);
+      return 'Invalid date';
     }
   }
 

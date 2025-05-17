@@ -34,7 +34,7 @@ import { LoadingService } from '../../../core/services/loading.service';
 export class LoadingComponent implements OnInit {
   loading = false;
 
-  constructor(private loadingService: LoadingService) {}
+  constructor(private readonly loadingService: LoadingService) {}
 
   ngOnInit(): void {
     this.loadingService.loading$.subscribe(loading => {

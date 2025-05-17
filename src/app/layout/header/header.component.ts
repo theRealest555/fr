@@ -172,10 +172,10 @@ export class HeaderComponent implements OnInit {
   isDarkMode = false;
 
   constructor(
-    private authService: AuthService,
-    private router: Router,
-    private notificationService: NotificationService,
-    private themeService: ThemeService
+    private readonly authService: AuthService,
+    private readonly router: Router,
+    private readonly notificationService: NotificationService,
+    private readonly themeService: ThemeService
   ) { }
 
   ngOnInit(): void {
