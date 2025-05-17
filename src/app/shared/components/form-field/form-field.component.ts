@@ -1,9 +1,11 @@
+// Updated FormField Component with improved responsiveness
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl } from '@angular/forms';
 
 @Component({
   selector: 'app-form-field',
+  standalone: true,
   imports: [CommonModule],
   template: `
     <div class="mb-4 transition-all duration-150 hover:shadow-sm">
@@ -12,7 +14,7 @@ import { AbstractControl } from '@angular/forms';
         <span *ngIf="required" class="text-red-500 ml-1">*</span>
 
         <!-- Info tooltip -->
-        <div *ngIf="tooltip" class="relative ml-2 group">
+        <div *ngIf="tooltip" class="relative ml-2 inline-block group">
           <button type="button" class="flex items-center justify-center h-5 w-5 rounded-full bg-gray-200 dark:bg-dark-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-dark-600 focus:outline-none">
             <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
@@ -58,7 +60,27 @@ import { AbstractControl } from '@angular/forms';
         {{ hint }}
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    /* Small screen adjustments */
+    @media (max-width: 640px) {
+      :host ::ng-deep input,
+      :host ::ng-deep select,
+      :host ::ng-deep textarea {
+        font-size: 16px; /* Prevents iOS zoom on focus */
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+      }
+
+      :host ::ng-deep .group-hover\:visible {
+        visibility: visible;
+      }
+
+      :host ::ng-deep .group-hover\:opacity-100 {
+        opacity: 1;
+      }
+    }
+  `]
 })
 export class FormFieldComponent {
   @Input() label = '';

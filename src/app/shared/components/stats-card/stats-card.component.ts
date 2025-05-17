@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="bg-white dark:bg-dark-800 shadow dark:shadow-dark-md rounded-lg p-6 hover:shadow-md dark:hover:shadow-dark-lg transition-all duration-200 border border-gray-100 dark:border-dark-700 relative overflow-hidden">
+    <div class="bg-white dark:bg-dark-800 shadow dark:shadow-dark-md rounded-lg p-4 sm:p-6 hover:shadow-md dark:hover:shadow-dark-lg transition-all duration-200 border border-gray-100 dark:border-dark-700 relative overflow-hidden">
       <!-- Background pattern (optional) -->
       <div *ngIf="showPattern" class="absolute inset-0 overflow-hidden opacity-5 pointer-events-none">
         <svg class="absolute right-0 top-0 h-24 w-24 transform translate-x-1/3 -translate-y-1/3 text-gray-500 dark:text-gray-400" viewBox="0 0 24 24" fill="currentColor">
@@ -14,14 +14,14 @@ import { CommonModule } from '@angular/common';
         </svg>
       </div>
 
-      <div class="flex items-start relative">
+      <div class="flex flex-col sm:flex-row sm:items-start relative">
         <!-- Icon container -->
-        <div [class]="'p-3 rounded-lg ' + bgColorClass + ' ' + textColorClass + ' shadow-sm transform transition-transform hover:scale-105 dark:shadow-dark-sm'">
+        <div [class]="'p-3 rounded-lg mb-3 sm:mb-0 ' + bgColorClass + ' ' + textColorClass + ' shadow-sm transform transition-transform hover:scale-105 dark:shadow-dark-sm'">
           <ng-content select="[icon]"></ng-content>
         </div>
 
-        <div class="ml-5 flex-1">
-          <div class="flex justify-between items-start">
+        <div class="sm:ml-5 flex-1">
+          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start">
             <div>
               <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">{{ title }}</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-white group">
@@ -41,7 +41,7 @@ import { CommonModule } from '@angular/common';
             </div>
 
             <!-- Optional visual indicator -->
-            <div *ngIf="showProgress" class="ml-2">
+            <div *ngIf="showProgress" class="mt-3 sm:mt-0 sm:ml-2">
               <svg class="h-9 w-9" viewBox="0 0 36 36">
                 <path
                   class="stroke-current text-gray-200 dark:text-dark-600"
@@ -77,7 +77,31 @@ import { CommonModule } from '@angular/common';
         </div>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    :host {
+      display: block;
+    }
+    @media (max-width: 640px) {
+      .text-2xl {
+        font-size: 1.5rem;
+      }
+      .p-4, .sm\\:p-6 {
+        padding: 1rem !important;
+      }
+      .sm\\:ml-5 {
+        margin-left: 0 !important;
+      }
+    }
+    @media (max-width: 400px) {
+      .text-2xl {
+        font-size: 1.2rem;
+      }
+      .p-4, .sm\\:p-6 {
+        padding: 0.75rem !important;
+      }
+    }
+  `]
 })
 export class StatsCardComponent {
   @Input() title = '';

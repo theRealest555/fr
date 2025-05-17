@@ -1,5 +1,4 @@
-// Updated Modal Component (src/app/shared/components/modals/modal.component.ts)
-
+// Updated Modal Component with improved responsiveness
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonComponent } from '../button/button.component';
@@ -24,11 +23,13 @@ import { ButtonComponent } from '../button/button.component';
         <!-- Modal panel -->
         <div
           class="inline-block transform overflow-hidden rounded-lg bg-white dark:bg-dark-800 text-left align-bottom shadow-xl dark:shadow-dark-lg transition-all sm:my-8 sm:w-full sm:align-middle"
-          [class.sm:max-w-md]="size === 'sm'"
+          [class.sm:max-w-xs]="size === 'xs'"
+          [class.sm:max-w-sm]="size === 'sm'"
           [class.sm:max-w-lg]="size === 'md'"
           [class.sm:max-w-3xl]="size === 'lg'"
           [class.sm:max-w-4xl]="size === 'xl'"
           [class.sm:max-w-7xl]="size === 'full'"
+          [style.width]="mobileFullWidth ? '100%' : ''"
           (click)="$event.stopPropagation()"
         >
           <!-- Header -->
@@ -37,7 +38,7 @@ import { ButtonComponent } from '../button/button.component';
               <!-- Icon (optional) -->
               <div
                 *ngIf="icon"
-                class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10"
+                class="mx-auto flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10"
                 [ngClass]="iconClasses"
               >
                 <ng-container *ngTemplateOutlet="icon"></ng-container>
@@ -63,7 +64,7 @@ import { ButtonComponent } from '../button/button.component';
               [loading]="primaryButtonLoading"
               [disabled]="primaryButtonDisabled"
               (onClick)="onPrimaryClick.emit()"
-              class="w-full sm:w-auto sm:ml-3"
+              class="w-full sm:w-auto sm:ml-3 mb-2 sm:mb-0"
             >
               {{ primaryButtonText }}
             </app-button>
@@ -102,14 +103,28 @@ import { ButtonComponent } from '../button/button.component';
     :host ::ng-deep .transform {
       animation: modalFadeIn 0.3s ease-out forwards;
     }
+
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+      :host ::ng-deep .align-bottom {
+        max-height: 85vh;
+        overflow-y: auto;
+      }
+
+      /* Improve scrolling on iOS */
+      :host ::ng-deep .overflow-y-auto {
+        -webkit-overflow-scrolling: touch;
+      }
+    }
   `]
 })
 export class ModalComponent {
   @Input() isOpen = false;
   @Input() title = '';
-  @Input() size: 'sm' | 'md' | 'lg' | 'xl' | 'full' = 'md';
+  @Input() size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full' = 'md';
   @Input() closeOnBackdrop = true;
   @Input() showFooter = true;
+  @Input() mobileFullWidth = true; // New prop to control mobile width
 
   @Input() icon?: any;
   @Input() iconType: 'info' | 'success' | 'warning' | 'error' | 'question' = 'info';
@@ -147,5 +162,26 @@ export class ModalComponent {
 
   close(): void {
     this.onClose.emit();
+  }
+
+  ngOnInit(): void {
+    // Prevent scrolling on the body when modal is open
+    if (this.isOpen) {
+      document.body.classList.add('overflow-hidden');
+    }
+  }
+
+  ngOnChanges(): void {
+    // Update body class when isOpen changes
+    if (this.isOpen) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+  }
+
+  ngOnDestroy(): void {
+    // Clean up when component is destroyed
+    document.body.classList.remove('overflow-hidden');
   }
 }

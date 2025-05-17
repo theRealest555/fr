@@ -1,3 +1,4 @@
+// Updated Header Component with improved responsive design
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -46,7 +47,7 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme
             <!-- Logo and title -->
             <div class="flex-shrink-0 flex items-center">
               <div class="relative flex items-center">
-                <img class="w-auto" style="height: 38px;" src="assets/images/logo.png" alt="TE Connectivity Logo">
+                <img class="w-auto" style="height: 32px; sm:height: 38px;" src="assets/images/logo.png" alt="TE Connectivity Logo">
                 <div class="absolute -top-1 -right-1 flex h-3 w-3">
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
                   <span class="relative inline-flex rounded-full h-3 w-3 bg-primary-500"></span>
@@ -62,12 +63,12 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme
           </div>
 
           <!-- Right side items -->
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2 sm:space-x-4">
             <!-- Theme Toggle -->
             <app-theme-toggle></app-theme-toggle>
 
             <!-- User dropdown -->
-            <div class="ml-3 relative" *ngIf="currentUser">
+            <div class="relative" *ngIf="currentUser">
               <div>
                 <button
                   type="button"
@@ -80,11 +81,11 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme
                   <span class="sr-only">Open user menu</span>
 
                   <!-- User avatar/initials -->
-                  <div class="h-9 w-9 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-semibold shadow-md">
+                  <div class="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-semibold shadow-md">
                     {{ currentUser.fullName.charAt(0) }}
                   </div>
 
-                  <!-- User name -->
+                  <!-- User name (hidden on small screens) -->
                   <span class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-200 hidden sm:block group">
                     <div class="flex items-center">
                       {{ currentUser.fullName }}
@@ -92,8 +93,8 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme
                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                       </svg>
                     </div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 font-normal">
-                      {{ currentUser.email }}
+                    <div class="text-xs text-gray-500 dark:text-gray-400 font-normal hidden md:block">
+                      {{ truncateEmail(currentUser.email) }}
                     </div>
                   </span>
                 </button>
@@ -110,7 +111,7 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme
               >
                 <div class="px-4 py-2 border-b border-gray-100 dark:border-dark-700">
                   <div class="text-sm font-medium text-gray-900 dark:text-white">{{ currentUser.fullName }}</div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400">{{ currentUser.email }}</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 truncate w-40">{{ currentUser.email }}</div>
                 </div>
 
                 <a
@@ -186,6 +187,18 @@ export class HeaderComponent implements OnInit {
     this.themeService.isDarkMode().subscribe(isDark => {
       this.isDarkMode = isDark;
     });
+
+    document.addEventListener('click', this.handleClickOutside.bind(this));
+  }
+
+  ngOnDestroy(): void {
+    document.removeEventListener('click', this.handleClickOutside.bind(this));
+  }
+
+  handleClickOutside(event: MouseEvent): void {
+    if (this.isUserMenuOpen && !(event.target as Element).closest('#user-menu-button')) {
+      this.isUserMenuOpen = false;
+    }
   }
 
   onToggleSidebar(): void {
@@ -208,10 +221,13 @@ export class HeaderComponent implements OnInit {
         this.notificationService.success('You have been successfully logged out');
       },
       error: () => {
-        // Error will be handled by the interceptor
-        // Still navigate to login to ensure the user can log out
         this.router.navigate(['/auth/login']);
       }
     });
+  }
+
+  truncateEmail(email: string): string {
+    if (!email || email.length <= 20) return email;
+    return email.substring(0, 20) + '...';
   }
 }

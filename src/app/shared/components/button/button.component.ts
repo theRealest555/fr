@@ -1,3 +1,4 @@
+// Updated Button Component with improved responsiveness
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -68,6 +69,17 @@ import { CommonModule } from '@angular/common';
         opacity: 0;
       }
     }
+
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+      :host ::ng-deep button {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+      }
+      :host ::ng-deep [icon-start], :host ::ng-deep [icon-end] {
+        margin-bottom: 0.25rem;
+      }
+    }
   `]
 })
 export class ButtonComponent {
@@ -86,14 +98,14 @@ export class ButtonComponent {
       case 'xs':
         return 'px-2 py-1 text-xs';
       case 'sm':
-        return 'px-3 py-1.5 text-sm';
+        return 'px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm';
       case 'lg':
-        return 'px-5 py-2.5 text-base';
+        return 'px-4 sm:px-5 py-2 sm:py-2.5 text-sm sm:text-base';
       case 'xl':
-        return 'px-6 py-3 text-lg';
+        return 'px-5 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg';
       case 'md':
       default:
-        return 'px-4 py-2 text-sm';
+        return 'px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm';
     }
   }
 
@@ -101,22 +113,16 @@ export class ButtonComponent {
     switch (this.variant) {
       case 'secondary':
         return 'bg-primary-100 text-primary-700 hover:bg-primary-200 focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:bg-primary-900/50 dark:text-primary-300 dark:hover:bg-primary-900 dark:focus:ring-offset-dark-900';
-
       case 'outline':
         return 'bg-white dark:bg-transparent border border-primary-500 text-primary-700 hover:bg-primary-50 focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:text-primary-300 dark:border-primary-400 dark:hover:bg-primary-900/30 dark:focus:ring-offset-dark-900';
-
       case 'danger':
         return 'bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:bg-red-700 dark:hover:bg-red-800 dark:focus:ring-offset-dark-900';
-
       case 'success':
         return 'bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:bg-green-700 dark:hover:bg-green-800 dark:focus:ring-offset-dark-900';
-
       case 'warning':
         return 'bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-offset-dark-900';
-
       case 'info':
         return 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-offset-dark-900';
-
       case 'primary':
       default:
         return 'bg-primary-500 text-white hover:bg-primary-600 focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-offset-dark-900';

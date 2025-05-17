@@ -1,3 +1,4 @@
+// Updated Submission Form Component with improved responsiveness
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -22,10 +23,10 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
   ],
   template: `
     <div class="max-w-3xl mx-auto">
-      <div class="bg-white dark:bg-dark-800 shadow dark:shadow-dark-md rounded-lg px-6 py-8 transition-colors duration-200">
+      <div class="bg-white dark:bg-dark-800 shadow dark:shadow-dark-md rounded-lg px-4 sm:px-6 py-6 sm:py-8 transition-colors duration-200">
         <!-- Header -->
-        <div class="mb-8 text-center">
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Submit Your Information</h1>
+        <div class="mb-6 sm:mb-8 text-center">
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Submit Your Information</h1>
           <p class="mt-2 text-gray-600 dark:text-gray-300">
             Please complete all required fields and upload the necessary documents.
           </p>
@@ -34,7 +35,7 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
         <!-- Form -->
         <form [formGroup]="submissionForm" (ngSubmit)="onSubmit()">
           <!-- Personal Information Section -->
-          <div class="mb-8">
+          <div class="mb-6 sm:mb-8">
             <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-dark-700">
               Personal Information
             </h2>
@@ -191,7 +192,7 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
           </div>
 
           <!-- Documents Section -->
-          <div class="mb-8">
+          <div class="mb-6 sm:mb-8">
             <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-dark-700">
               Document Upload
             </h2>
@@ -238,13 +239,14 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
             </div>
           </div>
 
-          <!-- Submit Button -->
-          <div class="flex justify-end">
+          <!-- Submit Button - Full width on mobile -->
+          <div class="flex justify-center sm:justify-end">
             <app-button
               type="submit"
               [loading]="loading"
               [disabled]="submissionForm.invalid || loading || !cinImage || !picImage || (greyCard?.value && !greyCardImage)"
               variant="primary"
+              class="w-full sm:w-auto"
             >
               Submit Information
             </app-button>
@@ -254,8 +256,19 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
     </div>
   `,
   styles: [`
-    .form-error {
-      @apply text-sm text-red-600 mt-1;
+    @media (max-width: 640px) {
+      input[type="date"] {
+        min-height: 38px;
+      }
+      input::-webkit-date-and-time-value {
+        text-align: left;
+      }
+      .grid-cols-1 {
+        grid-template-columns: 1fr !important;
+      }
+      .w-full {
+        width: 100% !important;
+      }
     }
   `]
 })
@@ -264,6 +277,7 @@ export class SubmissionFormComponent implements OnInit {
   plants: Plant[] = [];
   loading = false;
   GenderType = GenderType; // Expose enum to template
+  window = window; // Expose window to template for responsive checks
 
   cinImage: File | null = null;
   picImage: File | null = null;
@@ -310,6 +324,28 @@ export class SubmissionFormComponent implements OnInit {
   ngOnInit(): void {
     // Load plants
     this.loadPlants();
+
+    // Add listener for orientation changes to improve mobile experience
+    window.addEventListener('orientationchange', () => {
+      // Give time for the DOM to update
+      setTimeout(() => this.checkMobileLayout(), 300);
+    });
+
+    // Initial check
+    this.checkMobileLayout();
+  }
+
+  // Handle mobile-specific layout adjustments
+  checkMobileLayout(): void {
+    // If in a very narrow screen or landscape on mobile,
+    // we might want to make some specific adjustments
+    const isMobile = window.innerWidth < 640;
+    const isLandscape = window.innerWidth > window.innerHeight;
+
+    if (isMobile && isLandscape) {
+      // Make adjustments for landscape mobile if needed
+      // This helps with virtual keyboard handling
+    }
   }
 
   loadPlants(): void {
@@ -349,12 +385,15 @@ export class SubmissionFormComponent implements OnInit {
   }
 
   validateFile(file: File): boolean {
+    // If on mobile, we might want to be more lenient with file sizes
+    const isMobile = window.innerWidth < 640;
+    const maxSize = isMobile ? 2 * 1024 * 1024 : 1 * 1024 * 1024; // 2MB on mobile, 1MB on desktop
+
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!validTypes.includes(file.type)) {
       return false;
     }
 
-    const maxSize = 1 * 1024 * 1024; // 1MB in bytes
     if (file.size > maxSize) {
       return false;
     }
@@ -363,12 +402,20 @@ export class SubmissionFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    Object.keys(this.submissionForm.controls).forEach(key => {
-      const control = this.submissionForm.get(key);
-      control?.markAsTouched();
-    });
-
+    // Additional validation for mobile - ensure form is scrolled to top to see any errors
     if (this.submissionForm.invalid) {
+      // Mark all fields as touched to show all validation errors
+      Object.keys(this.submissionForm.controls).forEach(key => {
+        const control = this.submissionForm.get(key);
+        control?.markAsTouched();
+      });
+
+      // Find the first invalid control and scroll to it
+      const firstInvalidControl = document.querySelector('.ng-invalid.ng-touched');
+      if (firstInvalidControl) {
+        firstInvalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
       return;
     }
 

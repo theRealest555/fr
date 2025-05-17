@@ -168,6 +168,9 @@ export class SubmissionsChartComponent implements OnInit, OnChanges, AfterViewIn
   chartType: 'bar' | 'line' = 'bar';
   isDarkMode = false;
 
+  // Responsive: detect mobile
+  isMobile = false;
+
   // For line chart animation
   pathLength = 0;
   animatedDashOffset = 0;
@@ -179,6 +182,12 @@ export class SubmissionsChartComponent implements OnInit, OnChanges, AfterViewIn
 
     this.themeService.isDarkMode().subscribe(isDark => {
       this.isDarkMode = isDark;
+    });
+
+    // Responsive: detect mobile
+    this.isMobile = window.innerWidth < 640;
+    window.addEventListener('resize', () => {
+      this.isMobile = window.innerWidth < 640;
     });
   }
 

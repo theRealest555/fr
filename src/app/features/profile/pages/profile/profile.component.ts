@@ -19,18 +19,18 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
     <div class="max-w-4xl mx-auto">
       <!-- Profile Overview -->
       <div class="bg-white dark:bg-dark-800 shadow dark:shadow-dark-md rounded-lg mb-6 transition-colors duration-200">
-        <div class="px-6 py-5 border-b border-gray-200 dark:border-dark-700">
+        <div class="px-4 sm:px-6 py-5 border-b border-gray-200 dark:border-dark-700">
           <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Profile Information</h2>
         </div>
-        <div class="px-6 py-5">
-          <div *ngIf="user" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="px-4 sm:px-6 py-5">
+          <div *ngIf="user" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <div class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Full Name</div>
               <div class="text-lg text-gray-900 dark:text-white">{{ user.fullName }}</div>
             </div>
             <div>
               <div class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Email Address</div>
-              <div class="text-lg text-gray-900 dark:text-white">{{ user.email }}</div>
+              <div class="text-lg text-gray-900 dark:text-white break-all">{{ user.email }}</div>
             </div>
             <div>
               <div class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Plant</div>
@@ -51,10 +51,10 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
 
       <!-- Change Password -->
       <div class="bg-white dark:bg-dark-800 shadow dark:shadow-dark-md rounded-lg mb-6 transition-colors duration-200">
-        <div class="px-6 py-5 border-b border-gray-200 dark:border-dark-700">
+        <div class="px-4 sm:px-6 py-5 border-b border-gray-200 dark:border-dark-700">
           <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Change Password</h2>
         </div>
-        <div class="px-6 py-5">
+        <div class="px-4 sm:px-6 py-5">
           <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()">
             <!-- Current Password -->
             <div class="mb-4">
@@ -109,7 +109,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
             </div>
 
             <!-- Password Requirements -->
-            <div class="rounded-md bg-blue-50 dark:bg-blue-900/20 p-4">
+            <div class="rounded-md bg-blue-50 dark:bg-blue-900/20 p-4 mb-6">
               <div class="flex">
                 <div class="flex-shrink-0">
                   <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -131,13 +131,14 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
               </div>
             </div>
 
-            <!-- Submit Button -->
-            <div class="flex justify-end mt-6">
+            <!-- Submit Button - full width on mobile -->
+            <div class="flex justify-end">
               <app-button
                 type="submit"
                 [loading]="loading"
                 [disabled]="passwordForm.invalid || loading"
                 [fullWidth]="true"
+                class="w-full sm:w-auto"
               >
                 Change Password
               </app-button>
@@ -148,17 +149,17 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
 
       <!-- Active Sessions -->
       <div class="bg-white dark:bg-dark-800 shadow dark:shadow-dark-md rounded-lg transition-colors duration-200">
-        <div class="px-6 py-5 border-b border-gray-200 dark:border-dark-700">
+        <div class="px-4 sm:px-6 py-5 border-b border-gray-200 dark:border-dark-700">
           <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Active Sessions</h2>
         </div>
-        <div class="px-6 py-5">
+        <div class="px-4 sm:px-6 py-5">
           <div *ngIf="!loadingSessions && sessions.length === 0" class="text-center py-4 text-gray-500 dark:text-gray-400">
             No active sessions found
           </div>
 
           <ul *ngIf="!loadingSessions && sessions.length > 0" class="divide-y divide-gray-200 dark:divide-dark-700">
             <li *ngFor="let session of sessions" class="py-4">
-              <div class="flex justify-between">
+              <div class="flex flex-col sm:flex-row sm:justify-between">
                 <div>
                   <p class="text-sm font-medium text-gray-900 dark:text-white">
                     {{ session.deviceInfo || 'Unknown Device' }}
@@ -173,7 +174,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
                     Expires: {{ formatDate(session.expiresAt) }}
                   </p>
                 </div>
-                <div class="self-center">
+                <div class="self-center mt-2 sm:mt-0">
                   <span
                     *ngIf="isCurrentSession(session)"
                     class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 mr-2"
@@ -193,7 +194,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 dark:border-primary-400"></div>
           </div>
 
-          <!-- Logout Button -->
+          <!-- Logout Button - full width on mobile -->
           <div class="mt-4 flex justify-end">
             <app-button
               (onClick)="logoutAllDevices()"
@@ -201,6 +202,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
               [disabled]="loadingLogout || sessions.length === 0"
               variant="danger"
               size="md"
+              class="w-full sm:w-auto"
             >
               Logout from All Devices
             </app-button>
@@ -210,14 +212,14 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
 
       <!-- Logout Confirmation Modal -->
       <div *ngIf="showLogoutConfirmation" class="fixed inset-0 overflow-y-auto z-50">
-        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
           <div class="fixed inset-0 transition-opacity" aria-hidden="true">
             <div class="absolute inset-0 bg-gray-500 opacity-75 dark:bg-black dark:bg-opacity-75"></div>
           </div>
 
-          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+          <span class="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">&#8203;</span>
 
-          <div class="inline-block align-bottom bg-white dark:bg-dark-800 rounded-lg text-left overflow-hidden shadow-xl dark:shadow-dark-lg transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          <div class="inline-block align-bottom bg-white dark:bg-dark-800 rounded-lg text-left overflow-hidden shadow-xl dark:shadow-dark-lg transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
             <div class="bg-white dark:bg-dark-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div class="sm:flex sm:items-start">
                 <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 sm:mx-0 sm:h-10 sm:w-10">

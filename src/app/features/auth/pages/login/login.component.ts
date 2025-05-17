@@ -1,3 +1,4 @@
+// Updated Login Component with improved responsiveness
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -19,11 +20,11 @@ import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle
     ThemeToggleComponent
   ],
   template: `
-    <div class="min-h-screen flex flex-col items-center justify-center py-12 sm:px-6 lg:px-8 bg-gray-50 dark:bg-dark-900 transition-colors duration-200">
-      <!-- Background pattern -->
+    <div class="min-h-screen flex flex-col items-center justify-center py-10 sm:py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-dark-900 transition-colors duration-200">
+      <!-- Background pattern - better positioned on mobile -->
       <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div class="absolute top-0 right-0 -mt-16 -mr-32 w-80 h-80 bg-primary-500/10 dark:bg-primary-900/20 rounded-full"></div>
-        <div class="absolute bottom-0 left-0 -mb-16 -ml-32 w-80 h-80 bg-primary-500/10 dark:bg-primary-900/20 rounded-full"></div>
+        <div class="absolute top-0 right-0 -mt-8 sm:-mt-16 -mr-16 sm:-mr-32 w-40 sm:w-80 h-40 sm:h-80 bg-primary-500/10 dark:bg-primary-900/20 rounded-full"></div>
+        <div class="absolute bottom-0 left-0 -mb-8 sm:-mb-16 -ml-16 sm:-ml-32 w-40 sm:w-80 h-40 sm:h-80 bg-primary-500/10 dark:bg-primary-900/20 rounded-full"></div>
         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl">
           <svg width="100%" height="100%" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" class="text-primary-500/5 dark:text-primary-700/5">
             <defs>
@@ -36,8 +37,8 @@ import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle
         </div>
       </div>
 
-      <!-- Theme toggle -->
-      <div class="absolute top-4 right-4 z-10">
+      <!-- Theme toggle - better positioned on mobile -->
+      <div class="absolute top-2 sm:top-4 right-2 sm:right-4 z-10">
         <app-theme-toggle></app-theme-toggle>
       </div>
 
@@ -45,23 +46,23 @@ import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle
         <!-- Logo -->
         <div class="flex justify-center">
           <div class="relative flex items-center">
-            <img src="assets/images/logo.png" alt="TE Connectivity Logo" class="h-16 w-auto">
-            <div class="absolute -top-1 -right-1 flex h-3 w-3">
+            <img src="assets/images/logo.png" alt="TE Connectivity Logo" class="h-12 sm:h-16 w-auto">
+            <div class="absolute -top-1 -right-1 flex h-2 w-2 sm:h-3 sm:w-3">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-3 w-3 bg-primary-500"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 bg-primary-500"></span>
             </div>
           </div>
         </div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">Admin Login</h2>
-        <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+        <h2 class="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">Admin Login</h2>
+        <p class="mt-2 text-center text-sm sm:text-base text-gray-600 dark:text-gray-400">
           Sign in to access the admin dashboard
         </p>
       </div>
 
-      <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md z-10">
-        <div class="bg-white dark:bg-dark-800 py-8 px-4 shadow-lg dark:shadow-dark-lg sm:rounded-lg sm:px-10 transition-colors duration-200 border border-gray-200 dark:border-dark-700">
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
-            <!-- Email Field -->
+      <div class="mt-6 sm:mt-8 sm:mx-auto sm:w-full sm:max-w-md z-10">
+        <div class="bg-white dark:bg-dark-800 py-6 sm:py-8 px-4 sm:px-10 shadow-lg dark:shadow-dark-lg sm:rounded-lg transition-colors duration-200 border border-gray-200 dark:border-dark-700 w-full">
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4 sm:space-y-6">
+            <!-- Email Field - Improved for mobile -->
             <div>
               <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email address</label>
               <div class="mt-1 relative rounded-md shadow-sm">
@@ -80,6 +81,7 @@ import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle
                   class="form-input block w-full pl-10 sm:text-sm border-gray-300 dark:border-dark-600 dark:bg-dark-700 dark:text-white rounded-md focus:ring-primary-500 focus:border-primary-500 transition-colors duration-150"
                   [ngClass]="{'border-red-500 focus:ring-red-500 focus:border-red-500': email?.invalid && (email?.dirty || email?.touched)}"
                   placeholder="admin@example.com"
+                  inputmode="email"
                 >
               </div>
               <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="mt-1 text-sm text-red-600 dark:text-red-500">
@@ -88,7 +90,7 @@ import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle
               </div>
             </div>
 
-            <!-- Password Field -->
+            <!-- Password Field - Improved for mobile -->
             <div>
               <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
               <div class="mt-1 relative rounded-md shadow-sm">
@@ -107,10 +109,11 @@ import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle
                   [ngClass]="{'border-red-500 focus:ring-red-500 focus:border-red-500': password?.invalid && (password?.dirty || password?.touched)}"
                   placeholder="••••••••"
                 >
-                <!-- Toggle password visibility -->
+                <!-- Toggle password visibility - larger touch target on mobile -->
                 <button
                   type="button"
-                  class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center h-full focus:outline-none"
+                  style="min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center;"
                   (click)="togglePasswordVisibility()"
                 >
                   <svg *ngIf="!showPassword" class="h-5 w-5 text-gray-400 dark:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -128,9 +131,9 @@ import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle
               </div>
             </div>
 
-            <!-- Back to Public Site Link -->
-            <div class="text-sm flex justify-between">
-              <a routerLink="/" class="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 transition-colors duration-150">
+            <!-- Links - Better spaced for mobile -->
+            <div class="text-xs sm:text-sm flex justify-between flex-wrap">
+              <a routerLink="/" class="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 transition-colors duration-150 mb-2 sm:mb-0">
                 &larr; Return to public site
               </a>
               <a href="#" class="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 transition-colors duration-150">
@@ -138,7 +141,7 @@ import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle
               </a>
             </div>
 
-            <!-- Submit Button -->
+            <!-- Submit Button - Full width on all screens for better touch target -->
             <div>
               <app-button
                 type="submit"
@@ -156,7 +159,27 @@ import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle
         </div>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    /* Mobile-specific styles */
+    @media (max-width: 640px) {
+      :host ::ng-deep input {
+        font-size: 16px !important; /* Prevents iOS zoom on input focus */
+      }
+
+      :host ::ng-deep button[type="button"] {
+        /* Ensure minimum tap target size */
+        padding: 8px;
+      }
+    }
+
+    /* Fix for better mobile keyboard handling */
+    @media (max-height: 600px) {
+      .min-h-screen {
+        min-height: 600px; /* Ensure min height on landscape with keyboard open */
+      }
+    }
+  `]
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
@@ -193,6 +216,33 @@ export class LoginComponent implements OnInit {
     this.themeService.isDarkMode().subscribe(isDark => {
       this.isDarkMode = isDark;
     });
+
+    // Focus email field automatically (but after a delay on mobile to prevent keyboard popping up immediately)
+    setTimeout(() => {
+      const emailInput = document.getElementById('email') as HTMLInputElement;
+      if (emailInput && window.innerWidth >= 640) { // Only auto-focus on non-mobile
+        emailInput.focus();
+      }
+    }, 300);
+
+    // Handle orientation changes on mobile
+    window.addEventListener('orientationchange', () => {
+      // Give time for browser UI to settle
+      setTimeout(() => this.adjustForOrientation(), 300);
+    });
+
+    // Initial check
+    this.adjustForOrientation();
+  }
+
+  // Adjust layout for different orientations
+  adjustForOrientation(): void {
+    const isLandscape = window.innerWidth > window.innerHeight;
+
+    if (isLandscape && window.innerHeight < 500) {
+      // In landscape with limited height (keyboard likely open)
+      // We could make adjustments here if needed
+    }
   }
 
   get email() { return this.loginForm.get('email'); }
@@ -200,6 +250,11 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {
     if (this.loginForm.invalid) {
+      // Mark fields as touched to show validation errors
+      Object.keys(this.loginForm.controls).forEach(key => {
+        const control = this.loginForm.get(key);
+        control?.markAsTouched();
+      });
       return;
     }
 

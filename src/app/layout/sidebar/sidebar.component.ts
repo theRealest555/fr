@@ -1,3 +1,4 @@
+// Updated Sidebar Component with improved responsiveness
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -47,7 +48,7 @@ import { AdminRoles, User } from '../../core/models/auth.models';
             <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
-            Dashboard
+            <span class="truncate">Dashboard</span>
           </a>
 
           <!-- Submissions Menu -->
@@ -57,7 +58,7 @@ import { AdminRoles, User } from '../../core/models/auth.models';
             <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Submissions
+            <span class="truncate">Submissions</span>
           </a>
 
           <!-- Plants Management (SuperAdmin only) -->
@@ -68,7 +69,7 @@ import { AdminRoles, User } from '../../core/models/auth.models';
             <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
-            Plants
+            <span class="truncate">Plants</span>
           </a>
 
           <!-- User Management (SuperAdmin only) -->
@@ -79,7 +80,7 @@ import { AdminRoles, User } from '../../core/models/auth.models';
             <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
-            Admin Users
+            <span class="truncate">Admin Users</span>
           </a>
 
           <!-- Export Data -->
@@ -89,7 +90,7 @@ import { AdminRoles, User } from '../../core/models/auth.models';
             <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Export Data
+            <span class="truncate">Export Data</span>
           </a>
 
           <!-- Profile -->
@@ -99,8 +100,19 @@ import { AdminRoles, User } from '../../core/models/auth.models';
             <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
-            Profile
+            <span class="truncate">Profile</span>
           </a>
+
+          <!-- Mobile items (only visible on mobile sidebar) -->
+          <div class="md:hidden border-t border-gray-700 dark:border-dark-700 mt-4 pt-4">
+            <a routerLink="/"
+               class="group flex items-center px-2 py-2.5 text-sm font-medium rounded-md hover:bg-gray-700 dark:hover:bg-dark-700 text-gray-300 hover:text-white transition-colors duration-150">
+              <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              <span class="truncate">Return to Public Site</span>
+            </a>
+          </div>
         </nav>
       </div>
 
@@ -115,7 +127,22 @@ import { AdminRoles, User } from '../../core/models/auth.models';
         </div>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    /* Custom scrollbar for the navigation */
+    :host ::ng-deep nav::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    :host ::ng-deep nav::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    :host ::ng-deep nav::-webkit-scrollbar-thumb {
+      background-color: rgba(156, 163, 175, 0.3);
+      border-radius: 3px;
+    }
+  `]
 })
 export class SidebarComponent implements OnInit {
   currentUser: User | null = null;
