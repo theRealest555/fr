@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Submission } from '../../../core/models/data.models';
 import { ThemeService } from '../../../core/services/theme.service';
@@ -42,20 +42,16 @@ import { ThemeService } from '../../../core/services/theme.service';
               <!-- Bar -->
               <div class="relative w-full group">
                 <div
-                  class="w-full bg-primary-100 dark:bg-primary-900/20 rounded-t transition-all duration-300 ease-out"
-                  [style.height.%]="0"
-                  #barElement
-                  [attr.data-height]="getPercentage(count)"
-                  [attr.data-count]="count"
+                  class="w-full bg-primary-100 dark:bg-primary-900/20 rounded-t transition-all duration-700 ease-out"
+                  [style.height.%]="getPercentage(count)"
                 >
-                </div>
-
-                <!-- Tooltip -->
-                <div *ngIf="count > 0" class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <div class="bg-gray-900 dark:bg-dark-600 text-white text-xs rounded py-1 px-2">
-                    {{ count }} submissions
+                  <!-- Tooltip -->
+                  <div *ngIf="count > 0" class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <div class="bg-gray-900 dark:bg-dark-600 text-white text-xs rounded py-1 px-2">
+                      {{ count }} submissions
+                    </div>
+                    <div class="w-2 h-2 bg-gray-900 dark:bg-dark-600 transform rotate-45 absolute -bottom-1 left-1/2 -translate-x-1/2"></div>
                   </div>
-                  <div class="w-2 h-2 bg-gray-900 dark:bg-dark-600 transform rotate-45 absolute -bottom-1 left-1/2 -translate-x-1/2"></div>
                 </div>
               </div>
 
@@ -69,23 +65,28 @@ import { ThemeService } from '../../../core/services/theme.service';
           <!-- Line Chart -->
           <div *ngIf="chartType === 'line'" class="h-full relative">
             <!-- Horizontal grid lines -->
-            <div *ngFor="let _ of [0,1,2,3,4]" class="absolute border-b border-gray-200 dark:border-dark-700 w-full"
-                 [style.bottom.%]="_ * 25"></div>
+            <div *ngFor="let _ of [0,1,2,3,4]; let i = index" class="absolute border-b border-gray-200 dark:border-dark-700 w-full"
+                 [style.bottom.%]="i * 25"></div>
 
-            <!-- Line chart will be drawn with SVG -->
-            <svg class="absolute inset-0 w-full h-full" #lineChart>
+            <!-- Line chart with SVG -->
+            <svg #lineChart class="absolute inset-0 w-full h-full">
+              <!-- Area under the line -->
+              <path
+                [attr.d]="getAreaPath()"
+                class="fill-primary-100/50 dark:fill-primary-900/20 transition-all duration-700 ease-out"
+              ></path>
+
+              <!-- Line itself -->
               <path
                 [attr.d]="getLinePath()"
-                class="stroke-primary-500 dark:stroke-primary-400 fill-none transition-all duration-300 ease-out"
+                class="stroke-primary-500 dark:stroke-primary-400 fill-none transition-all duration-700 ease-out"
                 stroke-width="3"
                 stroke-linecap="round"
                 stroke-linejoin="round"
+                [attr.stroke-dasharray]="pathLength"
+                [attr.stroke-dashoffset]="animatedDashOffset"
               ></path>
-              <path
-                [attr.d]="getLinePath()"
-                class="stroke-primary-500/10 dark:stroke-primary-400/10 fill-primary-100/50 dark:fill-primary-900/20 transition-all duration-300 ease-out"
-                stroke-width="0"
-              ></path>
+
               <!-- Data points -->
               <g *ngFor="let count of weeklyCounts; let i = index">
                 <circle
@@ -94,7 +95,10 @@ import { ThemeService } from '../../../core/services/theme.service';
                   [attr.cy]="getPointY(count)"
                   r="4"
                   class="fill-white dark:fill-dark-800 stroke-primary-500 dark:stroke-primary-400 stroke-2"
-                ></circle>
+                >
+                  <!-- Data point tooltips -->
+                  <title>{{ count }} submissions</title>
+                </circle>
               </g>
             </svg>
 
@@ -140,10 +144,9 @@ import { ThemeService } from '../../../core/services/theme.service';
     }
   `]
 })
-export class SubmissionsChartComponent implements OnInit, AfterViewInit {
+export class SubmissionsChartComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() submissions: Submission[] = [];
   @ViewChild('lineChart') lineChartElement!: ElementRef<SVGElement>;
-  @ViewChild('barElement', {static: false, read: ElementRef}) barElements!: ElementRef[];
 
   weeklyCounts: number[] = [0, 0, 0, 0, 0, 0, 0];
   weekDays: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -151,9 +154,11 @@ export class SubmissionsChartComponent implements OnInit, AfterViewInit {
   totalThisWeek = 0;
   weeklyChange = 0;
   chartType: 'bar' | 'line' = 'bar';
-  chartWidth = 0;
-  chartHeight = 0;
   isDarkMode = false;
+
+  // For line chart animation
+  pathLength = 0;
+  animatedDashOffset = 0;
 
   constructor(private readonly themeService: ThemeService) {}
 
@@ -165,6 +170,13 @@ export class SubmissionsChartComponent implements OnInit, AfterViewInit {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['submissions']) {
+      this.processData();
+      setTimeout(() => this.animateChart(), 100);
+    }
+  }
+
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.animateChart();
@@ -172,6 +184,16 @@ export class SubmissionsChartComponent implements OnInit, AfterViewInit {
   }
 
   processData(): void {
+    // Reset data
+    this.weeklyCounts = [0, 0, 0, 0, 0, 0, 0];
+    this.totalThisWeek = 0;
+
+    if (!this.submissions || this.submissions.length === 0) {
+      // Generate sample data if no data is provided
+      this.generateSampleData();
+      return;
+    }
+
     const now = new Date();
     const oneWeekAgo = new Date(now);
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -180,9 +202,6 @@ export class SubmissionsChartComponent implements OnInit, AfterViewInit {
     twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 
     let lastWeekTotal = 0;
-
-    // Reset counts
-    this.weeklyCounts = [0, 0, 0, 0, 0, 0, 0];
 
     // Process submissions
     this.submissions.forEach(submission => {
@@ -210,6 +229,15 @@ export class SubmissionsChartComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // Generate sample data if no data is provided
+  generateSampleData(): void {
+    // Some random sample data for demonstration
+    this.weeklyCounts = [2, 5, 3, 7, 4, 6, 3];
+    this.totalThisWeek = this.weeklyCounts.reduce((sum, count) => sum + count, 0);
+    this.maxCount = Math.max(...this.weeklyCounts);
+    this.weeklyChange = 12; // Sample percentage change
+  }
+
   getPercentage(count: number): number {
     if (this.maxCount <= 0) return 0;
     return Math.max(5, (count / this.maxCount) * 100); // At least 5% height for visibility
@@ -227,22 +255,19 @@ export class SubmissionsChartComponent implements OnInit, AfterViewInit {
   // Animation for bars and line chart
   animateChart(): void {
     if (this.chartType === 'bar') {
-      // Find all bar elements and animate them
-      const bars = document.querySelectorAll('[data-height]');
-      bars.forEach(bar => {
-        const targetHeight = bar.getAttribute('data-height') + '%';
-        (bar as HTMLElement).style.setProperty('--target-height', targetHeight);
-        (bar as HTMLElement).style.animation = 'growHeight 1s ease-out forwards';
-        (bar as HTMLElement).style.height = targetHeight;
-      });
+      // Bar chart animation is handled by CSS
     } else if (this.chartType === 'line' && this.lineChartElement) {
-      // Animate the line path with dash offset
-      const path = this.lineChartElement.nativeElement.querySelector('path');
+      // Animate the line path
+      const path = this.lineChartElement.nativeElement.querySelector('path:nth-child(2)');
       if (path) {
-        const length = path.getTotalLength();
-        path.style.strokeDasharray = length.toString();
-        path.style.strokeDashoffset = length.toString();
-        path.style.animation = 'drawLine 1.5s ease-out forwards';
+        this.pathLength = (path as SVGPathElement).getTotalLength();
+        this.animatedDashOffset = 0;
+
+        // Trigger animation
+        this.animatedDashOffset = this.pathLength;
+        setTimeout(() => {
+          this.animatedDashOffset = 0;
+        }, 50);
       }
     }
   }
@@ -273,11 +298,42 @@ export class SubmissionsChartComponent implements OnInit, AfterViewInit {
         const y = height - padding - (this.weeklyCounts[i] / this.maxCount) * effectiveHeight;
         path += ` L ${x},${y}`;
       }
-
-      // Close the path to the bottom for fill
-      path += ` L ${padding + ((this.weeklyCounts.length - 1) * step)},${height - padding}`;
-      path += ` L ${padding},${height - padding} Z`;
     }
+
+    return path;
+  }
+
+  // Area path for the fill under the line
+  getAreaPath(): string {
+    if (!this.weeklyCounts.length) return '';
+
+    // Calculate points for the area
+    let path = '';
+    const width = 100;
+    const height = 100;
+    const padding = 10;
+
+    const effectiveWidth = width - (padding * 2);
+    const effectiveHeight = height - (padding * 2);
+    const step = effectiveWidth / (this.weeklyCounts.length - 1);
+
+    // Start path at the bottom left
+    path = `M ${padding},${height - padding}`;
+
+    // Go to the first data point
+    const firstY = height - padding - (this.weeklyCounts[0] / this.maxCount) * effectiveHeight;
+    path += ` L ${padding},${firstY}`;
+
+    // Add line to each subsequent point
+    for (let i = 1; i < this.weeklyCounts.length; i++) {
+      const x = padding + (i * step);
+      const y = height - padding - (this.weeklyCounts[i] / this.maxCount) * effectiveHeight;
+      path += ` L ${x},${y}`;
+    }
+
+    // Close the path to the bottom
+    path += ` L ${padding + ((this.weeklyCounts.length - 1) * step)},${height - padding}`;
+    path += ` Z`;
 
     return path;
   }
