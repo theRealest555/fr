@@ -1,4 +1,4 @@
-// Fixed File Upload Component with improved responsiveness, accessibility and mobile handling
+// Fixed File Upload Component with corrected HTML structure
 import { Component, EventEmitter, Input, Output, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -7,31 +7,25 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div 
-      class="mt-1 flex justify-center px-4 py-4 sm:px-6 sm:pt-5 sm:pb-6 border-2 rounded-md"
-      [class]="isDragOver ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/10' : 'border-gray-300 dark:border-dark-600 border-dashed'"
-      [class.border-red-300]="errorMessage"
-      [class.dark:border-red-700]="errorMessage"
-      [class.bg-red-50]="errorMessage"
-      [class.dark:bg-red-900/10]="errorMessage"
-      [attr.aria-label]="'File upload area. ' + helperText"
-      [attr.aria-describedby]="errorMessage ? 'file-upload-error' : null"
-      (dragover)="onDragOver($event)"
-      (dragleave)="onDragLeave($event)"
-      (drop)="onDrop($event)"
-      (keydown)="onKeyDown($event)"
-      tabindex="0"
-      role="button">
+    <div class="mt-1 flex justify-center px-4 py-4 sm:px-6 sm:pt-5 sm:pb-6 border-2 rounded-md"
+         [class]="isDragOver ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/10' : 'border-gray-300 dark:border-dark-600 border-dashed'"
+         [class.border-red-300]="errorMessage"
+         [class.dark:border-red-700]="errorMessage"
+         [class.bg-red-50]="errorMessage"
+         [ngClass]="{'dark:bg-red-900/10': errorMessage}"
+         (dragover)="onDragOver($event)"
+         (dragleave)="onDragLeave($event)"
+         (drop)="onDrop($event)">
       <div class="space-y-1 text-center">
         <!-- Different icon sizes for mobile vs desktop -->
-        <svg class="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400 dark:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+        <svg class="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400 dark:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
         </svg>
 
         <div class="flex flex-wrap justify-center text-sm text-gray-600 dark:text-gray-400">
-          <label [for]="inputId" class="relative cursor-pointer rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 dark:text-primary-400 dark:hover:text-primary-300 mx-1 px-2 py-1 touch-feedback">
+          <label [for]="inputId" class="relative cursor-pointer rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 dark:text-primary-400 dark:hover:text-primary-300 mx-1 px-2 py-1">
             <span>Upload a file</span>
-            <input [id]="inputId" type="file" class="sr-only" [accept]="accept" [multiple]="multiple" (change)="onFileSelected($event)" aria-label="File input">
+            <input [id]="inputId" type="file" class="sr-only" [accept]="accept" [multiple]="multiple" (change)="onFileSelected($event)">
           </label>
           <p class="pl-1">or drag and drop</p>
         </div>
@@ -45,40 +39,30 @@ import { CommonModule } from '@angular/common';
           On mobile, tap to select a file from your device
         </p>
 
-        <!-- File Preview with multiple file support -->
-        <div *ngIf="selectedFiles.length > 0" class="mt-3 flex flex-col items-center justify-center text-sm text-gray-700 dark:text-gray-300">
-          <div *ngFor="let file of selectedFiles; let i = index" class="flex items-center max-w-full p-2 bg-gray-50 dark:bg-dark-700/50 rounded-md mb-1">
-            <svg class="h-5 w-5 text-green-500 flex-shrink-0 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        <!-- File Preview (if a file is selected) with better visual feedback -->
+        <div *ngIf="selectedFiles.length > 0" class="mt-3 flex items-center justify-center text-sm text-gray-700 dark:text-gray-300 p-2 bg-gray-50 dark:bg-dark-700/50 rounded-md">
+          <div class="flex items-center max-w-full">
+            <svg class="h-5 w-5 text-green-500 flex-shrink-0 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
-            <!-- Filename with accessible tooltip -->
+            <!-- Truncate filename if too long with hover effect to show full name -->
             <div class="flex-1 min-w-0 group relative">
-              <span 
-                class="truncate max-w-[180px] sm:max-w-[240px] inline-block" 
-                [id]="'file-name-' + i"
-                [attr.title]="file.name"
-                tabindex="0">{{ file.name }}</span>
-              <span 
-                [id]="'tooltip-' + i"
-                class="absolute left-0 -bottom-5 bg-gray-800 text-white text-xs rounded px-2 py-1 hidden group-hover:block group-focus-within:block z-10 whitespace-nowrap">
-                {{ file.name }}
+              <span class="truncate max-w-[180px] sm:max-w-[240px] inline-block" [title]="selectedFiles[0].name">{{ selectedFiles[0].name }}</span>
+              <span class="absolute left-0 -bottom-5 bg-gray-800 text-white text-xs rounded px-2 py-1 hidden group-hover:block z-10 whitespace-nowrap">
+                {{ selectedFiles[0].name }}
               </span>
             </div>
-            <span class="ml-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">({{ formatFileSize(file.size) }})</span>
-            <button 
-              type="button" 
-              class="ml-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-1.5 touch-feedback" 
-              (click)="removeFile(i)"
-              aria-label="Remove file">
-              <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            <span class="ml-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">({{ formatFileSize(selectedFiles[0].size) }})</span>
+            <button type="button" class="ml-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-1.5" (click)="removeFile(0)">
+              <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
         </div>
 
         <!-- Error Message - More visible on mobile -->
-        <p *ngIf="errorMessage" id="file-upload-error" class="mt-2 text-sm text-red-600 dark:text-red-500 font-medium bg-red-50 dark:bg-red-900/20 p-2 rounded-md" role="alert">
+        <p *ngIf="errorMessage" class="mt-2 text-sm text-red-600 dark:text-red-500 font-medium bg-red-50 dark:bg-red-900/20 p-2 rounded-md">
           {{ errorMessage }}
         </p>
       </div>
@@ -116,13 +100,19 @@ import { CommonModule } from '@angular/common';
       -webkit-appearance: none;
     }
     
-    /* Ripple effect for better touch feedback */
-    .touch-feedback {
-      position: relative;
-      overflow: hidden;
+    /* Add ripple effect for better touch feedback */
+    @keyframes ripple {
+      0% {
+        transform: scale(0.8);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(2.4);
+        opacity: 0;
+      }
     }
     
-    .touch-feedback:after {
+    :host ::ng-deep .touch-feedback:after {
       content: '';
       display: block;
       position: absolute;
@@ -139,29 +129,10 @@ import { CommonModule } from '@angular/common';
       transition: transform .3s, opacity .5s;
     }
     
-    .touch-feedback:active:after {
+    :host ::ng-deep .touch-feedback:active:after {
       transform: scale(0, 0);
       opacity: .3;
       transition: 0s;
-    }
-
-    /* Keyboard focus styles for accessibility */
-    :host ::ng-deep [tabindex]:focus {
-      outline: 2px solid rgba(59, 130, 246, 0.5);
-      outline-offset: 2px;
-    }
-
-    :host ::ng-deep [tabindex]:focus:not(:focus-visible) {
-      outline: none;
-    }
-
-    /* Responsive text wrapping like in the data table component */
-    @media (max-width: 768px) {
-      :host ::ng-deep .truncate {
-        word-break: break-word;
-        hyphens: auto;
-        white-space: normal;
-      }
     }
   `]
 })
