@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControlOptions } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { PlantService } from '../../../../core/services/plant.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -93,6 +93,12 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
           />
           <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="mt-1 text-sm text-red-600">
             <div *ngIf="password?.errors?.['minlength']">Password must be at least 8 characters</div>
+            <div *ngIf="password?.errors?.['pattern']">
+              Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character
+            </div>
+          </div>
+          <div *ngIf="password?.value" class="mt-2 text-xs text-gray-500">
+            The password must be at least 8 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.
           </div>
         </div>
 
@@ -218,11 +224,19 @@ export class AddAdminComponent implements OnInit {
     private readonly router: Router,
     private readonly notificationService: NotificationService
   ) {
+    // Define password pattern for validation
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,100}$/;
+
     this.adminForm = this.formBuilder.group({
       fullName: ['', [Validators.required, Validators.maxLength(100)]],
       teid: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.minLength(8)],
+      password: ['', [
+        // Password is optional, but if provided, it must follow the pattern
+        Validators.minLength(8),
+        Validators.maxLength(100),
+        Validators.pattern(passwordPattern)
+      ]],
       plantId: [null, Validators.required],
       isSuperAdmin: [false, Validators.required]
     });
@@ -246,6 +260,11 @@ export class AddAdminComponent implements OnInit {
 
   onSubmit(): void {
     if (this.adminForm.invalid) {
+      // Mark all fields as touched to show validation errors
+      Object.keys(this.adminForm.controls).forEach(key => {
+        const control = this.adminForm.get(key);
+        control?.markAsTouched();
+      });
       return;
     }
 
@@ -255,7 +274,9 @@ export class AddAdminComponent implements OnInit {
     const adminData = {...this.adminForm.value};
     
     // If password is empty, use TE ID as the password
-    adminData.password ??= adminData.teid;
+    if (!adminData.password) {
+      adminData.password = adminData.teid;
+    }
 
     this.authService.registerAdmin(adminData).subscribe({
       next: (response) => {

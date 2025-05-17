@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-data-table',
@@ -29,7 +30,7 @@ import { CommonModule } from '@angular/common';
               </ng-container>
               <ng-template #defaultCell>
                 <ng-container *ngIf="column.template && !isTemplateRef(column.template); else plainValue">
-                  {{ column.template(item) }}
+                  <span [innerHTML]="sanitizeHTML(column.template(item))"></span>
                 </ng-container>
                 <ng-template #plainValue>
                   {{ getPropertyValue(item, column.field) }}
@@ -61,12 +62,18 @@ export class DataTableComponent implements OnChanges {
   @Input() actionTemplate: any;
   @Input() emptyMessage = 'No data available';
 
+  constructor(private sanitizer: DomSanitizer) {}
+
   ngOnChanges(changes: SimpleChanges): void {
     // You can add additional logic when inputs change
   }
 
   isTemplateRef(template: any): boolean {
     return template instanceof TemplateRef;
+  }
+
+  sanitizeHTML(content: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(content);
   }
 
   getPropertyValue(item: any, field: string): any {

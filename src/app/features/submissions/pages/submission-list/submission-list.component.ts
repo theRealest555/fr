@@ -2,6 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SubmissionService } from '../../../../core/services/submission.service';
 import { PlantService } from '../../../../core/services/plant.service';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -15,6 +16,7 @@ import { FilterComponent, FilterField } from '../../../../shared/components/filt
   imports: [
     CommonModule,
     RouterModule,
+    ReactiveFormsModule,
     DataTableComponent,
     FilterComponent
   ],
@@ -93,7 +95,8 @@ export class SubmissionListComponent implements OnInit {
   constructor(
     private readonly submissionService: SubmissionService,
     private readonly plantService: PlantService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly formBuilder: FormBuilder
   ) {}
 
   ngOnInit(): void {
@@ -103,9 +106,12 @@ export class SubmissionListComponent implements OnInit {
         this.userPlantId = user.plantId;
 
         this.loadSubmissions();
+        this.loadPlants();
       }
     });
+  }
 
+  loadPlants(): void {
     this.plantService.getAllPlants().subscribe(plants => {
       this.plants = plants;
       this.setupFilterConfig();
@@ -199,11 +205,11 @@ export class SubmissionListComponent implements OnInit {
     this.filteredSubmissions = filtered;
   }
 
-  greyCardTemplate(submission: Submission) {
+  greyCardTemplate(submission: Submission): string {
     return submission.greyCard ?? 'N/A';
   }
 
-  dateTemplate(submission: Submission, field: string) {
+  dateTemplate(submission: Submission, field: string): string {
     const dateValue = submission[field as keyof Submission] as string;
     return dateValue ? new Date(dateValue).toLocaleDateString() : 'N/A';
   }

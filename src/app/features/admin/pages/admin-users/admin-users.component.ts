@@ -10,7 +10,6 @@ import { User } from '../../../../core/models/auth.models';
 import { Plant } from '../../../../core/models/data.models';
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
 import { FilterComponent, FilterField } from '../../../../shared/components/filter/filter.component';
-import { AdminStatusComponent } from '../../../../shared/components/admin-status/admin-status.component';
 
 @Component({
   selector: 'app-admin-users',
@@ -20,8 +19,7 @@ import { AdminStatusComponent } from '../../../../shared/components/admin-status
     RouterModule,
     ReactiveFormsModule,
     DataTableComponent,
-    FilterComponent,
-    AdminStatusComponent
+    FilterComponent
 ],
   template: `
     <div>
@@ -61,27 +59,17 @@ import { AdminStatusComponent } from '../../../../shared/components/admin-status
           <div class="flex space-x-2 justify-end">
             <button
               (click)="resetPassword(admin.id)"
-              class="text-blue-600 hover:text-blue-900"
+              class="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Reset Password
             </button>
             <button
               (click)="deleteAdmin(admin.id, admin.fullName)"
-              class="text-red-600 hover:text-red-900"
+              class="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
               Delete
             </button>
           </div>
-        </ng-template>
-
-        <!-- Status template for data table -->
-        <ng-template #statusTemplate let-admin>
-          <app-admin-status [requirePasswordChange]="admin.requirePasswordChange"></app-admin-status>
-        </ng-template>
-
-        <!-- Role template for data table -->
-        <ng-template #roleTemplate let-admin>
-          {{ admin.isSuperAdmin ? 'Super Admin' : 'Regular Admin' }}
         </ng-template>
       </div>
 
@@ -201,12 +189,12 @@ export class AdminUsersComponent implements OnInit {
     {
       field: 'isSuperAdmin',
       title: 'Role',
-      templateRef: 'roleTemplate'
+      template: this.roleTemplate
     },
     {
       field: 'requirePasswordChange',
       title: 'Status',
-      templateRef: 'statusTemplate'
+      template: this.statusTemplate
     }
   ];
 
@@ -266,6 +254,16 @@ export class AdminUsersComponent implements OnInit {
         placeholder: 'Search by name or email'
       }
     ];
+  }
+
+  roleTemplate(admin: User): string {
+    return admin.isSuperAdmin ? 'Super Admin' : 'Regular Admin';
+  }
+
+  statusTemplate(admin: User): string {
+    return admin.requirePasswordChange 
+      ? '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Password Change Required</span>'
+      : '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>';
   }
 
   applyFilters(filters: any): void {

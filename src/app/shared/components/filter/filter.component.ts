@@ -1,5 +1,5 @@
 // src/app/shared/components/filter/filter.component.ts
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../button/button.component';
@@ -73,22 +73,34 @@ import { ButtonComponent } from '../button/button.component';
     </div>
   `
 })
-export class FilterComponent implements OnInit {
+export class FilterComponent implements OnInit, OnChanges {
   @Input() filterConfig: FilterField[] = [];
   @Input() showResetButton = true;
   @Output() filtersApplied = new EventEmitter<any>();
   
   filterForm!: FormGroup;
 
-  constructor(private readonly fb: FormBuilder) {}
+  constructor(private readonly fb: FormBuilder) {
+    // Initialize with empty form group to prevent errors
+    this.filterForm = this.fb.group({});
+  }
 
   ngOnInit(): void {
     this.initializeForm();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    // Re-initialize form when filter config changes
+    if (changes['filterConfig'] && !changes['filterConfig'].firstChange) {
+      this.initializeForm();
+    }
+  }
+
   private initializeForm(): void {
+    // Create a new form group
     const formGroup: Record<string, any> = {};
 
+    // Only add controls for the fields that exist in the config
     this.filterConfig.forEach(field => {
       formGroup[field.name] = [field.defaultValue !== undefined ? field.defaultValue : null];
     });
