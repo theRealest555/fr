@@ -217,7 +217,10 @@ export class DataTableComponent implements OnChanges {
     return value;
   }
 
-  onPageChange(page: number): void {
+  onPageChange(page: number | string): void {
+    // Skip if the page is not a number (like the ellipsis)
+    if (typeof page === 'string') return;
+
     if (page < 1 || page > this.totalPages || page === this.currentPage) {
       return;
     }
