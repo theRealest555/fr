@@ -1,4 +1,5 @@
-// src/app/features/admin/pages/add-admin/add-admin.component.ts
+// Update to add-admin.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -55,10 +56,11 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
             id="teid"
             formControlName="teid"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-            placeholder="Enter TE ID"
+            placeholder="Enter TE ID (format: TE12345)"
           />
           <div *ngIf="teid?.invalid && (teid?.dirty || teid?.touched)" class="mt-1 text-sm text-red-600">
             <div *ngIf="teid?.errors?.['required']">TE ID is required</div>
+            <div *ngIf="teid?.errors?.['pattern']">TE ID must be in the format TE followed by numbers (e.g. TE12345)</div>
           </div>
         </div>
 
@@ -82,7 +84,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
         <div class="mb-4">
           <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
             Password (Optional)
-            <span class="text-gray-500 font-normal"> - If left blank, TE ID will be used as initial password</span>
+            <span class="text-gray-500 font-normal"> - If left blank, TE ID + "_i" will be used as initial password</span>
           </label>
           <input
             type="password"
@@ -101,7 +103,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
             The password must be at least 8 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.
           </div>
           <div *ngIf="!password?.value" class="mt-2 text-xs text-gray-500">
-            When left empty, the user will log in with their TE ID as the initial password.
+            When left empty, the user will log in with their TE ID + "_i" as the initial password.
             They will be required to change it on first login.
           </div>
         </div>
@@ -233,7 +235,10 @@ export class AddAdminComponent implements OnInit {
 
     this.adminForm = this.formBuilder.group({
       fullName: ['', [Validators.required, Validators.maxLength(100)]],
-      teid: ['', Validators.required],
+      teid: ['', [
+        Validators.required,
+        Validators.pattern(/^TE\d+$/) // Ensure TE followed by numbers
+      ]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [
         // Password is optional, but if provided, it must follow the pattern
@@ -276,11 +281,9 @@ export class AddAdminComponent implements OnInit {
 
     // Create a copy of the form values
     const adminData = {...this.adminForm.value};
-    
-    // If password is empty, use TE ID as the password
-    if (!adminData.password) {
-      adminData.password = adminData.teid;
-    }
+
+    // Note: We don't set the password here anymore since the backend will use TEID + "_i"
+    // The logic for using the default password is in the AuthService.cs file
 
     this.authService.registerAdmin(adminData).subscribe({
       next: (response) => {

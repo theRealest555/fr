@@ -103,7 +103,8 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
                 [required]="true"
                 id="teId"
                 [customErrors]="{
-                  'maxlength': 'TE ID cannot exceed 50 characters'
+                  'maxlength': 'TE ID cannot exceed 50 characters',
+                  'pattern': 'TE ID must be in the format TE followed by numbers (e.g. TE12345)'
                 }"
               >
                 <input
@@ -111,7 +112,7 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
                   id="teId"
                   formControlName="teId"
                   class="form-input"
-                  placeholder="Enter your TE ID"
+                  placeholder="Enter your TE ID (format: TE12345)"
                 />
               </app-form-field>
 
@@ -283,7 +284,11 @@ export class SubmissionFormComponent implements OnInit {
       firstName: ['', [Validators.required, Validators.maxLength(50)]],
       lastName: ['', [Validators.required, Validators.maxLength(50)]],
       gender: [null, Validators.required],
-      teId: ['', [Validators.required, Validators.maxLength(50)]],
+      teId: ['', [
+        Validators.required,
+        Validators.maxLength(50),
+        Validators.pattern(/^TE\d+$/) // Updated to enforce TE format
+      ]],
       cin: ['', [
         Validators.required,
         Validators.maxLength(50),
