@@ -36,8 +36,8 @@ import { FilterComponent, FilterField } from '../../../../shared/components/filt
       </div>
 
       <!-- Filters -->
-      <app-filter 
-        [filterConfig]="filterConfig" 
+      <app-filter
+        [filterConfig]="filterConfig"
         (filtersApplied)="applyFilters($event)"
       ></app-filter>
 
