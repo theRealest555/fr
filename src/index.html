@@ -1,153 +1,171 @@
-// Add this script to index.html
-// This will handle viewport height calculations and various mobile-specific adjustments
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>TE Connectivity Admin</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#ff5a1f">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <app-root></app-root>
 
-// Function to set the CSS custom property --vh to the actual viewport height
-function setViewportHeight() {
-  // Get the viewport height
-  const vh = window.innerHeight * 0.01;
-  // Set the value in the --vh custom property to the root of the document
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
-}
+  <!-- Script to enhance mobile responsiveness -->
+  <script>
+    // Function to set the CSS custom property --vh to the actual viewport height
+    function setViewportHeight() {
+      // Get the viewport height
+      const vh = window.innerHeight * 0.01;
+      // Set the value in the --vh custom property to the root of the document
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
 
-// Execute the function on page load
-setViewportHeight();
+    // Execute the function on page load
+    setViewportHeight();
 
-// Recalculate on resize and on orientation change
-window.addEventListener('resize', setViewportHeight);
-window.addEventListener('orientationchange', setViewportHeight);
+    // Recalculate on resize and on orientation change
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', setViewportHeight);
 
-// Fix for iOS Safari 100vh issue and viewport resizing when address bar shows/hides
-document.addEventListener('DOMContentLoaded', function() {
-  // Get all elements that use 100vh
-  const fullHeightElements = document.querySelectorAll('.h-screen, .min-h-screen');
+    // Fix for iOS Safari 100vh issue and viewport resizing when address bar shows/hides
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get all elements that use 100vh
+      const fullHeightElements = document.querySelectorAll('.h-screen, .min-h-screen');
 
-  // Update their height when the window is resized
-  function updateFullHeightElements() {
-    fullHeightElements.forEach(el => {
-      if (el.classList.contains('h-screen')) {
-        el.style.height = `${window.innerHeight}px`;
-      } else if (el.classList.contains('min-h-screen')) {
-        el.style.minHeight = `${window.innerHeight}px`;
+      // Update their height when the window is resized
+      function updateFullHeightElements() {
+        fullHeightElements.forEach(el => {
+          if (el.classList.contains('h-screen')) {
+            el.style.height = `${window.innerHeight}px`;
+          } else if (el.classList.contains('min-h-screen')) {
+            el.style.minHeight = `${window.innerHeight}px`;
+          }
+        });
+      }
+
+      // Run once on load
+      updateFullHeightElements();
+
+      // Update on resize and scroll (for Safari mobile where the address bar hides/shows)
+      window.addEventListener('resize', updateFullHeightElements);
+      window.addEventListener('scroll', updateFullHeightElements);
+
+      // Also update on orientation change
+      window.addEventListener('orientationchange', function() {
+        // Slight delay to ensure the browser has completed any resizing
+        setTimeout(updateFullHeightElements, 300);
+      });
+    });
+
+    // Add a class to the body element to detect touch devices
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+      document.body.classList.add('touch-device');
+    }
+
+    // Detect iOS devices to apply specific fixes
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+      document.documentElement.classList.add('ios-device');
+    }
+
+    // Improve anchor link smooth scrolling on mobile
+    document.addEventListener('click', function(e) {
+      const target = e.target.closest('a[href^="#"]');
+      if (target) {
+        const id = target.getAttribute('href').substring(1);
+        const element = document.getElementById(id);
+
+        if (element) {
+          e.preventDefault();
+          window.scrollTo({
+            top: element.offsetTop - 70, // Adjust for fixed headers
+            behavior: 'smooth'
+          });
+        }
       }
     });
-  }
 
-  // Run once on load
-  updateFullHeightElements();
+    // Handle window size changes for responsive components
+    const mediaQueryMobile = window.matchMedia('(max-width: 640px)');
+    const mediaQueryTablet = window.matchMedia('(max-width: 768px)');
 
-  // Update on resize and scroll (for Safari mobile where the address bar hides/shows)
-  window.addEventListener('resize', updateFullHeightElements);
-  window.addEventListener('scroll', updateFullHeightElements);
+    function handleDeviceChange(e) {
+      if (e.matches) {
+        // Small screen detected
+        document.body.classList.add('is-mobile');
+      } else {
+        document.body.classList.remove('is-mobile');
+      }
+    }
 
-  // Also update on orientation change
-  window.addEventListener('orientationchange', function() {
-    // Slight delay to ensure the browser has completed any resizing
-    setTimeout(updateFullHeightElements, 300);
-  });
-});
+    // Register event listener
+    mediaQueryMobile.addEventListener('change', handleDeviceChange);
 
-// Add a class to the body element to detect touch devices
-if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-  document.body.classList.add('touch-device');
-}
+    // Initial check
+    handleDeviceChange(mediaQueryMobile);
 
-// Detect iOS devices to apply specific fixes
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-if (isIOS) {
-  document.documentElement.classList.add('ios-device');
-}
+    // Prevent zoom on input focus on iOS
+    if (isIOS) {
+      const viewportMeta = document.querySelector('meta[name="viewport"]');
+      if (viewportMeta) {
+        viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1');
+      }
+    }
 
-// Improve anchor link smooth scrolling on mobile
-document.addEventListener('click', function(e) {
-  const target = e.target.closest('a[href^="#"]');
-  if (target) {
-    const id = target.getAttribute('href').substring(1);
-    const element = document.getElementById(id);
+    // Function to determine if the browser supports the experimental 'scrollend' event
+    // This can be used for optimizations in scroll-heavy UI
+    function supportsScrollEndEvent() {
+      return 'onscrollend' in window;
+    }
 
-    if (element) {
-      e.preventDefault();
-      window.scrollTo({
-        top: element.offsetTop - 70, // Adjust for fixed headers
-        behavior: 'smooth'
+    // Apply a class if the browser supports the scrollend event
+    if (supportsScrollEndEvent()) {
+      document.documentElement.classList.add('supports-scrollend');
+    }
+
+    // Fix for position:fixed elements on mobile browsers when the virtual keyboard appears
+    if ('ontouchstart' in window) {
+      let activeInput = null;
+
+      // When an input is focused, store a reference to it
+      document.addEventListener('focusin', function(e) {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+          activeInput = e.target;
+        }
+      });
+
+      // When an input loses focus, clear the reference
+      document.addEventListener('focusout', function() {
+        activeInput = null;
+        // Allow fixed elements to reset
+        document.body.classList.remove('keyboard-open');
+      });
+
+      // Handle resize events, which occur when the virtual keyboard appears/disappears
+      window.addEventListener('resize', function() {
+        if (activeInput) {
+          // If an input is active and the window resizes, the keyboard is likely open
+          document.body.classList.add('keyboard-open');
+
+          // Ensure the active input is visible
+          setTimeout(function() {
+            activeInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
+        }
       });
     }
-  }
-});
 
-// Handle window size changes for responsive components
-const mediaQueryMobile = window.matchMedia('(max-width: 640px)');
-const mediaQueryTablet = window.matchMedia('(max-width: 768px)');
-
-function handleDeviceChange(e) {
-  if (e.matches) {
-    // Small screen detected
-    document.body.classList.add('is-mobile');
-  } else {
-    document.body.classList.remove('is-mobile');
-  }
-}
-
-// Register event listener
-mediaQueryMobile.addEventListener('change', handleDeviceChange);
-
-// Initial check
-handleDeviceChange(mediaQueryMobile);
-
-// Prevent zoom on input focus on iOS
-if (isIOS) {
-  const viewportMeta = document.querySelector('meta[name="viewport"]');
-  if (viewportMeta) {
-    viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1');
-  }
-}
-
-// Function to determine if the browser supports the experimental 'scrollend' event
-// This can be used for optimizations in scroll-heavy UI
-function supportsScrollEndEvent() {
-  return 'onscrollend' in window;
-}
-
-// Apply a class if the browser supports the scrollend event
-if (supportsScrollEndEvent()) {
-  document.documentElement.classList.add('supports-scrollend');
-}
-
-// Fix for position:fixed elements on mobile browsers when the virtual keyboard appears
-if ('ontouchstart' in window) {
-  let activeInput = null;
-
-  // When an input is focused, store a reference to it
-  document.addEventListener('focusin', function(e) {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-      activeInput = e.target;
+    // Add CSS variable with the current viewport width, useful for some responsive calculations
+    function updateViewportWidthVar() {
+      document.documentElement.style.setProperty('--vw', `${window.innerWidth * 0.01}px`);
     }
-  });
 
-  // When an input loses focus, clear the reference
-  document.addEventListener('focusout', function() {
-    activeInput = null;
-    // Allow fixed elements to reset
-    document.body.classList.remove('keyboard-open');
-  });
-
-  // Handle resize events, which occur when the virtual keyboard appears/disappears
-  window.addEventListener('resize', function() {
-    if (activeInput) {
-      // If an input is active and the window resizes, the keyboard is likely open
-      document.body.classList.add('keyboard-open');
-
-      // Ensure the active input is visible
-      setTimeout(function() {
-        activeInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
-    }
-  });
-}
-
-// Add CSS variable with the current viewport width, useful for some responsive calculations
-function updateViewportWidthVar() {
-  document.documentElement.style.setProperty('--vw', `${window.innerWidth * 0.01}px`);
-}
-
-updateViewportWidthVar();
-window.addEventListener('resize', updateViewportWidthVar);
+    updateViewportWidthVar();
+    window.addEventListener('resize', updateViewportWidthVar);
+  </script>
+</body>
+</html>
