@@ -1,3 +1,4 @@
+// Updated Plant-Form Component with Improved Mobile Responsiveness
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -19,22 +20,22 @@ import { FormFieldComponent } from '../../../../shared/components/form-field/for
   ],
   template: `
     <div class="max-w-2xl mx-auto">
-      <!-- Header with back button -->
+      <!-- Header with back button - improved touch target -->
       <div class="flex justify-between items-center mb-6">
         <div class="flex items-center">
-          <button (click)="goBack()" class="mr-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+          <button (click)="goBack()" class="mr-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 p-2 -ml-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500">
             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </button>
-          <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ isEditMode ? 'Edit Plant' : 'Add New Plant' }}</h1>
+          <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{{ isEditMode ? 'Edit Plant' : 'Add New Plant' }}</h1>
         </div>
       </div>
 
-      <!-- Plant Form -->
-      <div class="bg-white dark:bg-dark-800 shadow dark:shadow-dark-md rounded-lg px-6 py-8 transition-colors duration-200">
+      <!-- Plant Form - improved padding and spacing -->
+      <div class="bg-white dark:bg-dark-800 shadow dark:shadow-dark-md rounded-lg px-4 sm:px-6 py-6 sm:py-8 transition-colors duration-200">
         <form [formGroup]="plantForm" (ngSubmit)="onSubmit()">
-          <!-- Name Field -->
+          <!-- Name Field - using improved FormFieldComponent -->
           <app-form-field
             label="Plant Name"
             [control]="name!"
@@ -53,7 +54,7 @@ import { FormFieldComponent } from '../../../../shared/components/form-field/for
             />
           </app-form-field>
 
-          <!-- Description Field -->
+          <!-- Description Field - using improved FormFieldComponent -->
           <app-form-field
             label="Description"
             [control]="description!"
@@ -62,6 +63,7 @@ import { FormFieldComponent } from '../../../../shared/components/form-field/for
             [customErrors]="{
               'maxlength': 'Description cannot exceed 500 characters'
             }"
+            tooltip="Provide details about this plant's location, purpose, or other relevant information."
           >
             <textarea
               id="description"
@@ -72,20 +74,23 @@ import { FormFieldComponent } from '../../../../shared/components/form-field/for
             ></textarea>
           </app-form-field>
 
-          <!-- Action Buttons -->
-          <div class="mt-8 flex justify-end space-x-4">
+          <!-- Action Buttons - stacked on mobile, side by side on larger screens -->
+          <div class="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end space-y-4 space-y-reverse sm:space-y-0 sm:space-x-4">
             <app-button
               type="button"
               variant="outline"
               (onClick)="goBack()"
+              class="w-full sm:w-auto"
             >
               Cancel
             </app-button>
+            
             <app-button
               type="submit"
               [loading]="loading"
               [disabled]="plantForm.invalid || loading"
               variant="primary"
+              class="w-full sm:w-auto"
             >
               {{ isEditMode ? 'Update Plant' : 'Create Plant' }}
             </app-button>
@@ -93,7 +98,20 @@ import { FormFieldComponent } from '../../../../shared/components/form-field/for
         </form>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    /* Extra responsive styling */
+    @media (max-width: 640px) {
+      textarea {
+        min-height: 100px;
+      }
+      
+      /* Increase touch targets on mobile */
+      :host ::ng-deep button {
+        min-height: 44px;
+      }
+    }
+  `]
 })
 export class PlantFormComponent implements OnInit {
   plantForm: FormGroup;
@@ -151,6 +169,11 @@ export class PlantFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.plantForm.invalid) {
+      // Mark all fields as touched to show validation errors
+      Object.keys(this.plantForm.controls).forEach(key => {
+        const control = this.plantForm.get(key);
+        control?.markAsTouched();
+      });
       return;
     }
 
