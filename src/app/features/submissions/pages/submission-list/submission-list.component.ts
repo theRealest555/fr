@@ -1,4 +1,3 @@
-// src/app/features/submissions/pages/submission-list/submission-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';

@@ -99,7 +99,6 @@ export class NotificationComponent implements OnInit {
 
   ngOnInit(): void {
     this.notificationService.notifications$.subscribe(notifications => {
-      // Update progress
       notifications.forEach(notification => {
         if (notification.autoClose && !this.progressMap.has(notification.id)) {
           this.progressMap.set(notification.id, 100);
@@ -107,7 +106,6 @@ export class NotificationComponent implements OnInit {
         }
       });
 
-      // Remove progress for dismissed notifications
       const currentIds = new Set(notifications.map(n => n.id));
       Array.from(this.progressMap.keys()).forEach(id => {
         if (!currentIds.has(id)) {

@@ -73,7 +73,6 @@ export class InputComponent implements ControlValueAccessor {
   value = '';
   isPasswordVisible = false;
 
-  // Control Value Accessor Methods
   private onChange = (value: string) => {};
   private onTouched = () => {};
 

@@ -158,7 +158,6 @@ export class FilterComponent implements OnInit, OnChanges {
   fieldOptionsMap = new Map<string, any[]>();
 
   constructor(private readonly fb: FormBuilder) {
-    // Initialize with empty form group to prevent errors
     this.filterForm = this.fb.group({});
   }
 
@@ -168,25 +167,19 @@ export class FilterComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Re-initialize form when filter config changes
     if (changes['filterConfig'] && !changes['filterConfig'].firstChange) {
       this.initializeForm();
     }
   }
 
   private initializeForm(): void {
-    // Create a new form group
     const formGroup: Record<string, any> = {};
 
-    // Store options for display values
     this.fieldOptionsMap.clear();
 
-    // Only add controls for the fields that exist in the config
     this.filterConfig.forEach(field => {
-      // Important: Use ngValue in template and preserve the type here
       formGroup[field.name] = [field.defaultValue !== undefined ? field.defaultValue : null];
 
-      // Store options for display values
       if (field.options) {
         this.fieldOptionsMap.set(field.name, field.options);
       }
@@ -196,10 +189,8 @@ export class FilterComponent implements OnInit, OnChanges {
   }
 
   applyFilters(): void {
-    // Get form values and preserve their types
     const formValues = this.filterForm.value;
 
-    // Debug log to verify values
     console.log('Applying filters:', formValues);
 
     this.filtersApplied.emit(formValues);
@@ -207,7 +198,6 @@ export class FilterComponent implements OnInit, OnChanges {
 
   resetFilters(): void {
     this.filterForm.reset();
-    // Emit the reset values to update parent component
     this.filtersApplied.emit(this.filterForm.value);
   }
 
@@ -223,7 +213,6 @@ export class FilterComponent implements OnInit, OnChanges {
     const values = this.filterForm.value;
     return Object.keys(values).some(key => {
       const value = values[key];
-      // Also check for empty strings
       return value !== null && value !== undefined && value !== '';
     });
   }
@@ -241,10 +230,8 @@ export class FilterComponent implements OnInit, OnChanges {
         if (filterConfig) {
           let displayValue = value;
 
-          // For select fields, get the label instead of the value
           if (filterConfig.type === 'select' && this.fieldOptionsMap.has(key)) {
             const options = this.fieldOptionsMap.get(key);
-            // Use loose comparison for comparing primitive values (handle numbers vs strings)
             const option = options?.find(o => String(o.value) === String(value));
             if (option) {
               displayValue = option.label;
@@ -267,7 +254,6 @@ export class FilterComponent implements OnInit, OnChanges {
   clearFilter(name: string): void {
     if (this.filterForm.contains(name)) {
       this.filterForm.get(name)?.reset();
-      // Apply filters after clearing
       this.applyFilters();
     }
   }

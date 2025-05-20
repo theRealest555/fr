@@ -157,7 +157,6 @@ export class ButtonComponent {
 
     rippleContainer.appendChild(ripple);
 
-    // Remove ripple after animation completes
     ripple.addEventListener('animationend', () => {
       ripple.remove();
     });

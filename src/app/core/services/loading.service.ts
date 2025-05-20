@@ -1,4 +1,3 @@
-// src/app/core/services/loading.service.ts
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
@@ -6,8 +5,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class LoadingService {
-  private loadingSubject = new BehaviorSubject<boolean>(false);
-  private loadingMap = new Map<string, boolean>();
+  private readonly loadingSubject = new BehaviorSubject<boolean>(false);
+  private readonly loadingMap = new Map<string, boolean>();
 
   public loading$: Observable<boolean> = this.loadingSubject.asObservable();
 

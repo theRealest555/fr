@@ -1,4 +1,3 @@
-// src/app/shared/components/admin-status/admin-status.component.ts
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 

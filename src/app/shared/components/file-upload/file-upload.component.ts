@@ -126,15 +126,11 @@ export class FileUploadComponent {
       return false;
     }
 
-    // Check file type if accept is specified
-    if (this.accept && this.accept !== '*') {
-      // Convert accept string to array of MIME types
+      if (this.accept && this.accept !== '*') {
       const acceptedTypes = this.accept.split(',').map(type => type.trim());
 
-      // Check if file type matches any of the accepted types
       const fileType = file.type;
 
-      // Special handling for wildcards like 'image/*'
       const isAccepted = acceptedTypes.some(type => {
         if (type.endsWith('/*')) {
           const category = type.split('/')[0];

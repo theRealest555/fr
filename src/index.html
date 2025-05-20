@@ -8,37 +8,29 @@
   <meta name="theme-color" content="#ff5a1f">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 
-  <!-- Inter font from Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Prevent flash of unstyled content (FOUC) when toggling dark mode -->
   <script>
-    // Immediately apply a class to prevent flashing
     document.documentElement.classList.add('no-transitions');
 
-    // Check for saved theme preference or use the OS preference
     function getInitialTheme() {
       const savedTheme = localStorage.getItem('te-theme');
       if (savedTheme) {
         return savedTheme;
       }
-      // Check for OS preference
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
 
-    // Apply the theme class immediately to prevent flashing
     const initialTheme = getInitialTheme();
     document.documentElement.classList.add(initialTheme);
 
-    // Update meta theme color based on the theme
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
       metaThemeColor.setAttribute('content', initialTheme === 'dark' ? '#111827' : '#ff5a1f');
     }
 
-    // Remove the no-transitions class after a short delay to enable animations
     window.addEventListener('load', function() {
       setTimeout(function() {
         document.documentElement.classList.remove('no-transitions');
@@ -46,7 +38,6 @@
     });
   </script>
   <style>
-    /* Prevent transitions during initial load */
     .no-transitions * {
       transition: none !important;
     }

@@ -51,11 +51,11 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           break;
 
         case HttpStatusCode.Conflict: // 409
-          errorMessage = error.error?.message || 'A conflict occurred with your request';
+          errorMessage = error.error?.message ?? 'A conflict occurred with your request';
           break;
 
         case HttpStatusCode.UnprocessableEntity: // 422
-          errorMessage = error.error?.message || 'Unprocessable entity';
+          errorMessage = error.error?.message ?? 'Unprocessable entity';
           break;
 
         case HttpStatusCode.TooManyRequests: // 429
@@ -70,7 +70,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           break;
 
         default:
-          errorMessage = `Error ${error.status}: ${error.statusText || 'Unknown error'}`;
+          errorMessage = `Error ${error.status}: ${error.statusText ?? 'Unknown error'}`;
       }
 
       notificationService.error(errorMessage);

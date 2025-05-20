@@ -12,22 +12,18 @@ export class ThemeService {
   public theme$ = this.themeSubject.asObservable();
 
   constructor() {
-    // Apply the theme immediately on service initialization
     this.applyTheme(this.themeSubject.value);
 
-    // Watch for OS theme changes if no theme is explicitly stored
     this.watchSystemTheme();
   }
 
   private getInitialTheme(): Theme {
-    // Check if user has previously selected a theme
     const savedTheme = localStorage.getItem(this.THEME_KEY) as Theme | null;
 
     if (savedTheme) {
       return savedTheme;
     }
 
-    // Otherwise use the OS preference
     return this.getSystemTheme();
   }
 
@@ -38,9 +34,7 @@ export class ThemeService {
   private watchSystemTheme(): void {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-    // Watch for OS theme changes
     mediaQuery.addEventListener('change', (e) => {
-      // Only apply system theme if user hasn't set a preference
       if (!localStorage.getItem(this.THEME_KEY)) {
         const newTheme: Theme = e.matches ? 'dark' : 'light';
         this.themeSubject.next(newTheme);
@@ -67,13 +61,10 @@ export class ThemeService {
   }
 
   setTheme(theme: Theme): void {
-    // Update the subject
     this.themeSubject.next(theme);
 
-    // Save the preference
     this.saveTheme(theme);
 
-    // Apply the theme
     this.applyTheme(theme);
   }
 
@@ -82,11 +73,9 @@ export class ThemeService {
   }
 
   private applyTheme(theme: Theme): void {
-    // Remove both classes and add the appropriate one
     document.documentElement.classList.remove('light', 'dark');
     document.documentElement.classList.add(theme);
 
-    // Also update the meta theme-color for mobile browsers
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
       if (theme === 'dark') {

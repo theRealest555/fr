@@ -45,7 +45,7 @@ import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle
         <!-- Logo -->
         <div class="flex justify-center">
           <div class="relative flex items-center">
-            <img src="assets/images/logo.png" alt="TE Connectivity Logo" class="h-16 w-auto">
+            <img src="assets/images/logo.webp" alt="TE Connectivity Logo" class="h-16 w-auto">
             <div class="absolute -top-1 -right-1 flex h-3 w-3">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-3 w-3 bg-primary-500"></span>

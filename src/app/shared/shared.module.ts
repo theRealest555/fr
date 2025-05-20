@@ -1,10 +1,7 @@
-// src/app/shared/shared.module.ts
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-
-// Components
 import { ButtonComponent } from './components/button/button.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
@@ -38,15 +35,12 @@ const components = [
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
-    ...components // Import all standalone components
+    ...components
   ],
   exports: [
-    // Re-export Angular modules
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
-    
-    // Export all components
     ...components
   ]
 })

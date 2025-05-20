@@ -10,7 +10,7 @@ import { Plant, CreatePlantRequest, UpdatePlantRequest } from '../models/data.mo
 export class PlantService {
   private readonly apiUrl = `${environment.apiUrl}/Plants`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) { }
 
   // Get all plants
   getAllPlants(): Observable<Plant[]> {

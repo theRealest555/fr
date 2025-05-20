@@ -1,6 +1,3 @@
-// src/app/core/models/data.models.ts
-
-// Plant models
 export interface Plant {
   id: number;
   name: string;
@@ -72,7 +69,6 @@ export interface ExportRequest {
   plantId?: number;
 }
 
-// API response models
 export interface ApiResponse<T> {
   success: boolean;
   message?: string;

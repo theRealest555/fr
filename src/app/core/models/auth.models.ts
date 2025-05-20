@@ -1,6 +1,3 @@
-// src/app/core/models/auth.models.ts
-
-// User-related models
 export interface User {
   id: string;
   email: string;

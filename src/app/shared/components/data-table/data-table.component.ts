@@ -175,7 +175,7 @@ export class DataTableComponent implements OnChanges {
   paginatedData: any[] = [];
   sortColumn = '';
   sortDirection: 'asc' | 'desc' = 'asc';
-  Math = Math; // Expose Math to the template
+  Math = Math;
 
   constructor(private readonly sanitizer: DomSanitizer) {}
 
@@ -202,7 +202,6 @@ export class DataTableComponent implements OnChanges {
   }
 
   getPropertyValue(item: any, field: string): any {
-    // Handle nested properties with dot notation (e.g., 'user.name')
     if (!item || !field) return '';
 
     const props = field.split('.');
@@ -219,7 +218,6 @@ export class DataTableComponent implements OnChanges {
   }
 
   onPageChange(page: number | string): void {
-    // Skip if the page is not a number (like the ellipsis)
     if (typeof page === 'string') return;
 
     if (page < 1 || page > this.totalPages || page === this.currentPage) {
@@ -233,7 +231,6 @@ export class DataTableComponent implements OnChanges {
 
   onSort(column: string): void {
     if (this.sortColumn === column) {
-      // Toggle direction
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
       this.sortColumn = column;
@@ -247,21 +244,18 @@ export class DataTableComponent implements OnChanges {
 
   private sortData(): void {
     if (this.sortColumn) {
-      // Create a sorted copy of the data
       const sortedData = [...this.data].sort((a, b) => {
         const aValue = this.getPropertyValue(a, this.sortColumn);
         const bValue = this.getPropertyValue(b, this.sortColumn);
 
         if (aValue === bValue) return 0;
 
-        // Handle different data types
         if (typeof aValue === 'string' && typeof bValue === 'string') {
           return this.sortDirection === 'asc'
             ? aValue.localeCompare(bValue)
             : bValue.localeCompare(aValue);
         }
 
-        // For numbers, dates, etc.
         if (this.sortDirection === 'asc') {
           if (aValue < bValue) return -1;
           return 1;
@@ -294,12 +288,10 @@ export class DataTableComponent implements OnChanges {
     const pages: Array<number | string> = [];
 
     if (this.totalPages <= 7) {
-      // Show all pages if 7 or fewer
       for (let i = 1; i <= this.totalPages; i++) {
         pages.push(i);
       }
     } else {
-      // Always show first and last page, and a few around the current page
       pages.push(1);
 
       if (this.currentPage > 3) {

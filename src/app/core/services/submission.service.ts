@@ -13,7 +13,6 @@ export class SubmissionService {
 
   constructor(private readonly http: HttpClient) { }
 
-  // Get all submissions (SuperAdmin only)
   getAllSubmissions(): Observable<Submission[]> {
     return this.http.get<Submission[]>(this.apiUrl)
       .pipe(
@@ -24,7 +23,6 @@ export class SubmissionService {
       );
   }
 
-  // Get submissions for a specific plant
   getSubmissionsByPlant(plantId: number): Observable<Submission[]> {
     return this.http.get<Submission[]>(`${this.apiUrl}/plant/${plantId}`)
       .pipe(
@@ -35,7 +33,6 @@ export class SubmissionService {
       );
   }
 
-  // Get single submission by ID
   getSubmissionById(id: number): Observable<Submission> {
     return this.http.get<Submission>(`${this.apiUrl}/${id}`)
       .pipe(
@@ -46,12 +43,8 @@ export class SubmissionService {
       );
   }
 
-  // Create a new submission (public endpoint)
   createSubmission(submission: SubmissionRequest): Observable<{ message: string, id: number }> {
-    // We need to use FormData for file uploads
     const formData = new FormData();
-
-    // Add text fields
     formData.append('firstName', submission.firstName);
     formData.append('lastName', submission.lastName);
     formData.append('gender', submission.gender.toString());
@@ -64,7 +57,6 @@ export class SubmissionService {
       formData.append('greyCard', submission.greyCard);
     }
 
-    // Add files
     formData.append('cinImage', submission.cinImage);
     formData.append('picImage', submission.picImage);
 
@@ -81,19 +73,14 @@ export class SubmissionService {
       );
   }
 
-  // Get recent submissions for dashboard
   getRecentSubmissions(limit: number = 5): Observable<Submission[]> {
-    // No specific endpoint for recent submissions, so we'll get all and limit client-side
     return this.getAllSubmissions();
   }
 
-  // Get recent submissions for a specific plant
   getRecentSubmissionsByPlant(plantId: number, limit: number = 5): Observable<Submission[]> {
-    // No specific endpoint for recent submissions, so we'll get all for plant and limit client-side
     return this.getSubmissionsByPlant(plantId);
   }
 
-  // Export data to Excel
   exportData(exportRequest: ExportRequest): Observable<Blob> {
     return this.http.post(this.exportUrl, exportRequest, {
       responseType: 'blob'
@@ -105,7 +92,6 @@ export class SubmissionService {
     );
   }
 
-  // Search and filter submissions
   searchSubmissions(
     plantId?: number,
     searchTerm?: string,
@@ -113,9 +99,6 @@ export class SubmissionService {
     startDate?: string,
     endDate?: string
   ): Observable<Submission[]> {
-    // Since we don't have a specific search endpoint, we'll fetch the appropriate data
-    // and filter client-side based on the parameters
-
     if (plantId) {
       return this.getSubmissionsByPlant(plantId);
     } else {

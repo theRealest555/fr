@@ -228,8 +228,8 @@ export class AddAdminComponent implements OnInit {
     private readonly router: Router,
     private readonly notificationService: NotificationService
   ) {
-    // Define password pattern for validation
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,100}$/;
+    // // Define password pattern for validation
+    // const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,100}$/;
 
     this.adminForm = this.formBuilder.group({
       fullName: ['', [Validators.required, Validators.maxLength(100)]],
@@ -238,12 +238,12 @@ export class AddAdminComponent implements OnInit {
         Validators.pattern(/^TE\d+$/) // Ensure TE followed by numbers
       ]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [
-        // Password is optional, but if provided, it must follow the pattern
-        Validators.minLength(8),
-        Validators.maxLength(100),
-        Validators.pattern(passwordPattern)
-      ]],
+      // password: ['', [
+      //   // Password is optional, but if provided, it must follow the pattern
+      //   Validators.minLength(8),
+      //   Validators.maxLength(100),
+      //   Validators.pattern(passwordPattern)
+      // ]],
       plantId: [null, Validators.required],
       isSuperAdmin: [false, Validators.required]
     });
@@ -267,7 +267,6 @@ export class AddAdminComponent implements OnInit {
 
   onSubmit(): void {
     if (this.adminForm.invalid) {
-      // Mark all fields as touched to show validation errors
       Object.keys(this.adminForm.controls).forEach(key => {
         const control = this.adminForm.get(key);
         control?.markAsTouched();
@@ -277,23 +276,16 @@ export class AddAdminComponent implements OnInit {
 
     this.loading = true;
 
-    // Create a copy of the form values
     const adminData = {...this.adminForm.value};
 
-    // Note: We don't set the password here anymore since the backend will use TEID + "_i"
-    // The logic for using the default password is in the AuthService.cs file
+    // If password is empty, set it to TE ID + "_i"
+    adminData.password ??= `${adminData.teid}_init`;
 
     this.authService.registerAdmin(adminData).subscribe({
       next: (response) => {
         this.loading = false;
-
-        if (response.password) {
-          this.generatedPassword = response.password;
-          this.showPasswordModal = true;
-        } else {
           this.notificationService.success('Admin user created successfully');
           this.router.navigate(['/admin/users']);
-        }
       },
       error: () => {
         this.loading = false;

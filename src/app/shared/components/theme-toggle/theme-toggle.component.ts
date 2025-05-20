@@ -1,4 +1,3 @@
-// src/app/shared/components/theme-toggle/theme-toggle.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from '../../../core/services/theme.service';

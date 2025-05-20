@@ -148,9 +148,8 @@ export class StatsCardComponent {
   }
 
   getProgressDashArray(): string {
-    // Calculate percentage for the circular progress
     const value = this.progressValue || 0;
-    const circumference = 2 * Math.PI * 15.9155; // Radius is 15.9155 in the SVG
+    const circumference = 2 * Math.PI * 15.9155;
     const progressLength = (value / 100) * circumference;
     return `${progressLength} ${circumference}`;
   }

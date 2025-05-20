@@ -267,7 +267,7 @@ export class DashboardComponent implements OnInit {
           this.loading = false;
         },
         error: () => {
-          this.recentSubmissions = this.generateMockSubmissions(5);
+          this.recentSubmissions = [];
           this.loading = false;
         }
       });
@@ -284,46 +284,13 @@ export class DashboardComponent implements OnInit {
           this.loading = false;
         },
         error: () => {
-          this.recentSubmissions = this.generateMockSubmissions(5);
+          this.recentSubmissions = [];
           this.loading = false;
         }
       });
     } else {
       this.loading = false;
     }
-  }
-
-  // Generate mock submissions for testing the chart when API fails
-  generateMockSubmissions(count: number): Submission[] {
-    const submissions: Submission[] = [];
-    const today = new Date();
-
-    for (let i = 0; i < count; i++) {
-      const date = new Date(today);
-      // Distribute the submissions across the last week
-      date.setDate(date.getDate() - Math.floor(Math.random() * 7));
-
-      submissions.push({
-        id: i + 1,
-        firstName: `FirstName${i + 1}`,
-        lastName: `LastName${i + 1}`,
-        gender: Math.random() > 0.5 ? 0 : 1,
-        teId: `TE1000${i}`,
-        cin: `AB1000${i}`,
-        dateOfBirth: new Date(1990, 1, 1).toISOString(),
-        greyCard: Math.random() > 0.5 ? `12345-A-6789${i}` : '',
-        plantId: 1,
-        plantName: 'Mock Plant',
-        createdAt: date.toISOString(),
-        files: []
-      });
-    }
-
-    this.totalSubmissions = count;
-    this.withGreyCard = submissions.filter(s => s.greyCard && s.greyCard.trim() !== '').length;
-    this.previousPeriodGreyCards = Math.floor(this.withGreyCard * (0.7 + Math.random() * 0.5));
-
-    return submissions;
   }
 
   formatDate(dateString: string): string {

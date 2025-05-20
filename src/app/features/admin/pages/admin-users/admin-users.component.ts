@@ -1,4 +1,3 @@
-// src/app/features/admin/pages/admin-users/admin-users.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -40,8 +39,8 @@ import { FilterComponent, FilterField } from '../../../../shared/components/filt
       </div>
 
       <!-- Filters -->
-      <app-filter 
-        [filterConfig]="filterConfig" 
+      <app-filter
+        [filterConfig]="filterConfig"
         (filtersApplied)="applyFilters($event)"
       ></app-filter>
 
@@ -219,7 +218,7 @@ export class AdminUsersComponent implements OnInit {
   loadPlants(): void {
     this.plantService.getAllPlants().subscribe(plants => {
       this.plants = plants;
-      
+
       // Set up filter configuration after plants are loaded
       this.setupFilterConfig();
     });
@@ -261,14 +260,14 @@ export class AdminUsersComponent implements OnInit {
   }
 
   statusTemplate(admin: User): string {
-    return admin.requirePasswordChange 
+    return admin.requirePasswordChange
       ? '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Password Change Required</span>'
       : '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>';
   }
 
   applyFilters(filters: any): void {
     let filtered = [...this.admins];
-    
+
     // Filter by plant
     if (filters.plantId) {
       filtered = filtered.filter(a => a.plantId === Number(filters.plantId));
